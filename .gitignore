@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment variables — NEVER commit tokens
+.env
+.env.local
+server/.env
+client/.env
+
+# Build output
+dist/
+build/
+client/dist/
+
+# API exploration raw data — contains real client data (T-02-01, T-02-03)
+server/exploration/01-raw-responses.md
+server/exploration-output.txt
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

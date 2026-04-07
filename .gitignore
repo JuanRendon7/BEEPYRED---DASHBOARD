@@ -18,3 +18,10 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# GSD planning (local only)
+.planning/
+
+# Wisphub exploration outputs with real client data
+server/exploration/01-raw-responses.md
+server/exploration-output.txt

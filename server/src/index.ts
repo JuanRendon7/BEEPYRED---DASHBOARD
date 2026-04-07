@@ -2,6 +2,9 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { z } from 'zod'
+import { metricsRouter } from './routes/metrics'
+import { invoicesRouter } from './routes/invoices'
+import { errorHandler } from './middleware/errorHandler'
 
 // Env validation — fail fast if required vars are missing (per D-16, Claude's Discretion)
 const EnvSchema = z.object({
@@ -32,16 +35,17 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
-// BFF routes will be registered here in Plan 03
-// import metricsRouter from './routes/metrics'
-// import invoicesRouter from './routes/invoices'
-// app.use(metricsRouter)
-// app.use(invoicesRouter)
+// BFF routes
+app.use(metricsRouter)
+app.use(invoicesRouter)
 
-// 404 handler for unregistered routes
+// 404 handler for unregistered routes — must be after BFF routes, before errorHandler
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } })
 })
+
+// Error handler must be last middleware (4-argument signature required by Express)
+app.use(errorHandler)
 
 const port = parseInt(env.PORT, 10)
 app.listen(port, () => {

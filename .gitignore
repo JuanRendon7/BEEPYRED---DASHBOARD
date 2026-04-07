@@ -4,10 +4,14 @@ client/node_modules/
 server/node_modules/
 
 # Environment variables — NEVER COMMIT
+.env
+.env.local
 server/.env
 client/.env
 
 # Build outputs
+dist/
+build/
 client/dist/
 server/dist/
 
@@ -15,13 +19,17 @@ server/dist/
 *.log
 npm-debug.log*
 
-# OS
+# OS / Editor
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
 
 # GSD planning (local only)
 .planning/
 
-# Wisphub exploration outputs with real client data
+# Wisphub exploration outputs with real client data (T-02-01, T-02-03)
 server/exploration/01-raw-responses.md
 server/exploration-output.txt

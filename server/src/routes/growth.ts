@@ -37,36 +37,40 @@ growthRouter.get('/api/growth', async (_req: Request, res: Response) => {
     const currentYear = now.getFullYear()
     const currentMonth = now.getMonth() + 1 // 1-indexed
 
-    // Fetch clients and invoices in parallel
-    const [allClientsRaw, allInvoicesRaw] = await Promise.all([
-      fetchAllPages<unknown>('/api/clientes/'),
-      fetchAllPages<unknown>('/api/facturas/'),
-    ])
+    // Fetch only clients — invoices only have recent data, not historical
+    const allClientsRaw = await fetchAllPages<unknown>('/api/clientes/')
 
-    // ── clientGrowth: count new clients per month (by fecha_instalacion) ──
-    const newClientsPerMonth = new Map<string, number>()
+    // ── Parse each client: extract install month + monthly plan price ──
+    interface ClientRecord {
+      installKey: string  // "YYYY-MM"
+      precioPlan: number
+    }
+    const clientRecords: ClientRecord[] = []
 
     for (const raw of allClientsRaw.results) {
       const parsed = WisphubClientSchema.safeParse(raw)
-      if (parsed.success && parsed.data.fecha_instalacion) {
-        // Format: "DD/MM/YYYY HH:MM:SS"
-        const datePart = parsed.data.fecha_instalacion.split(' ')[0]
-        const parts = datePart.split('/')
-        if (parts.length === 3) {
-          const mm = parts[1], yyyy = parts[2]
-          const year = parseInt(yyyy, 10)
-          const month = parseInt(mm, 10)
-          if (!isNaN(year) && !isNaN(month)) {
-            // Exclude current month — only show complete historical months
-            if (year === currentYear && month === currentMonth) continue
-            const key = `${yyyy}-${mm.padStart(2, '0')}`
-            newClientsPerMonth.set(key, (newClientsPerMonth.get(key) ?? 0) + 1)
-          }
-        }
-      }
+      if (!parsed.success || !parsed.data.fecha_instalacion) continue
+
+      // Format: "DD/MM/YYYY HH:MM:SS"
+      const datePart = parsed.data.fecha_instalacion.split(' ')[0]
+      const parts = datePart.split('/')
+      if (parts.length !== 3) continue
+      const mm = parts[1], yyyy = parts[2]
+      const year = parseInt(yyyy, 10), month = parseInt(mm, 10)
+      if (isNaN(year) || isNaN(month)) continue
+      // Exclude current month — only complete historical months
+      if (year === currentYear && month === currentMonth) continue
+
+      const precioPlan = parseFloat(parsed.data.precio_plan ?? '0') || 0
+      clientRecords.push({ installKey: `${yyyy}-${mm.padStart(2, '0')}`, precioPlan })
     }
 
-    // Sort months and calculate running total
+    // ── clientGrowth: count new clients per month ──
+    const newClientsPerMonth = new Map<string, number>()
+    for (const { installKey } of clientRecords) {
+      newClientsPerMonth.set(installKey, (newClientsPerMonth.get(installKey) ?? 0) + 1)
+    }
+
     const sortedClientMonths = Array.from(newClientsPerMonth.keys()).sort()
     let runningTotal = 0
     const clientGrowth: ClientGrowthPoint[] = sortedClientMonths.map((month) => {
@@ -75,35 +79,22 @@ growthRouter.get('/api/growth', async (_req: Request, res: Response) => {
       return { month, newClients, totalClients: runningTotal }
     })
 
-    // ── revenueHistory: sum paid invoices per month ──
+    // ── revenueHistory: MRR per month = sum of precio_plan of clients active that month ──
+    // A client is "active" in a given month if their install month <= that month.
+    // This reconstructs historical MRR from client data since Wisphub only returns recent invoices.
+    const allMonths = sortedClientMonths  // already sorted ascending
     const revenuePerMonth = new Map<string, number>()
 
-    for (const raw of allInvoicesRaw.results) {
-      const r = raw as any
-      const estado: string = r.estado ?? ''
-      const fechaPago: string | null = r.fecha_pago ?? null
-      const totalCobrado: number = typeof r.total_cobrado === 'number'
-        ? r.total_cobrado
-        : parseFloat(r.total_cobrado ?? '0')
-
-      if (estado === 'Pagada' && fechaPago) {
-        // fechaPago format: "YYYY-MM-DD"
-        const [yyyy, mm] = fechaPago.split('-')
-        const year = parseInt(yyyy, 10)
-        const month = parseInt(mm, 10)
-        if (!isNaN(year) && !isNaN(month) && yyyy && mm) {
-          // Exclude current month — only show complete historical months
-          if (year === currentYear && month === currentMonth) continue
-          const key = `${yyyy}-${mm}`
-          revenuePerMonth.set(key, (revenuePerMonth.get(key) ?? 0) + totalCobrado)
-        }
-      }
+    for (const month of allMonths) {
+      // Clients active this month = all clients installed up to and including this month
+      const activeRevenue = clientRecords
+        .filter(c => c.installKey <= month)
+        .reduce((sum, c) => sum + c.precioPlan, 0)
+      revenuePerMonth.set(month, activeRevenue)
     }
 
-    // Sort months and calculate running total
-    const sortedRevenueMonths = Array.from(revenuePerMonth.keys()).sort()
     let runningRevenue = 0
-    const revenueHistory: RevenuePoint[] = sortedRevenueMonths.map((month) => {
+    const revenueHistory: RevenuePoint[] = allMonths.map((month) => {
       const revenue = revenuePerMonth.get(month) ?? 0
       runningRevenue += revenue
       return {

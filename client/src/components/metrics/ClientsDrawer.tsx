@@ -1,4 +1,5 @@
-import { X } from 'lucide-react'
+import { useState } from 'react'
+import { X, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useClients } from '@/hooks/useClients'
 import type { BffClient } from '@/types/api'
@@ -20,15 +21,22 @@ function formatCOP(amount: number): string {
 export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
   const isOpen = estado !== null
   const { data, isLoading, isError, error } = useClients()
+  const [search, setSearch] = useState('')
 
-  const filteredClients: BffClient[] = isOpen && data
+  const baseClients: BffClient[] = isOpen && data
     ? data.clients.filter((c) => c.estado === estado)
     : []
 
+  const filteredClients = search.trim()
+    ? baseClients.filter((c) =>
+        c.nombre.toLowerCase().includes(search.toLowerCase())
+      )
+    : baseClients
+
   const title = estado === 'Activo'
-    ? `Clientes activos (${filteredClients.length})`
+    ? `Clientes activos (${baseClients.length})`
     : estado === 'Suspendido'
-    ? `Clientes suspendidos (${filteredClients.length})`
+    ? `Clientes suspendidos (${baseClients.length})`
     : ''
 
   return (
@@ -46,7 +54,7 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
       {/* Drawer panel — z-40, 400px ancho, desliza desde derecha */}
       <div
         className={cn(
-          'fixed top-0 right-0 z-40 h-full w-[400px] max-w-[95vw]',
+          'fixed top-0 right-0 z-40 h-full w-[600px] max-w-[95vw]',
           'bg-surface border-l border-border',
           'flex flex-col',
           'transform transition-transform duration-300 ease-in-out',
@@ -66,6 +74,20 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
           >
             <X className="h-4 w-4" />
           </button>
+        </div>
+
+        {/* Search input */}
+        <div className="px-5 py-3 border-b border-border flex-shrink-0">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+            <input
+              type="text"
+              placeholder="Buscar cliente..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-page border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand transition-colors"
+            />
+          </div>
         </div>
 
         {/* Drawer body — scrollable */}
@@ -114,7 +136,7 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
               <tbody className="divide-y divide-border">
                 {filteredClients.map((client, idx) => (
                   <tr key={idx} className="hover:bg-white/5 transition-colors">
-                    <td className="px-5 py-3 text-text-primary font-medium truncate max-w-[140px]">
+                    <td className="px-5 py-3 text-text-primary font-medium">
                       {client.nombre}
                     </td>
                     <td className="px-3 py-3 text-text-secondary truncate max-w-[100px]">

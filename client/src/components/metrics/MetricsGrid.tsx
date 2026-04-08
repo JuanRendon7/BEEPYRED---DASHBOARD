@@ -1,4 +1,4 @@
-import { Users, Wifi, DollarSign, TrendingUp } from 'lucide-react'
+import { Users, UserX, DollarSign, TrendingUp } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
@@ -62,11 +62,11 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
         iconClassName="text-text-secondary"
       />
       <MetricCard
-        title="Conectados ahora"
-        value="N/D"
-        subtitle="No disponible en Wisphub API"
-        icon={Wifi}
-        iconClassName="text-text-muted"
+        title="Clientes suspendidos"
+        value={formatNumber(metrics.suspendedClients)}
+        subtitle="Estado Suspendido en Wisphub"
+        icon={UserX}
+        iconClassName="text-error"
       />
       <MetricCard
         title="Deuda pendiente"

@@ -11,7 +11,7 @@ const CACHE_TTL_MS = 30_000  // 30 seconds
 
 interface MetricsData {
   activeClients: number
-  connectedClients: null         // MET-02: not available via Wisphub API — confirmed in 02-api-shapes.md
+  suspendedClients: number       // Clients with estado === 'Suspendido'
   pendingDebt: number            // Sum of saldo across all active clients with saldo > 0
   monthlyRevenue: number         // Sum of total_cobrado for paid invoices this month
   fetchedAt: string
@@ -30,14 +30,16 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
 
     // Validate and filter clients server-side
     const activeClients: z.infer<typeof WisphubClientSchema>[] = []
+    let suspendedClients = 0
     let validationWarnings = 0
 
     for (const raw of allClientsRaw.results) {
       const parsed = WisphubClientSchema.safeParse(raw)
       if (parsed.success) {
-        // MET-01: filter by estado === 'Activo' server-side (API filter returns count:0)
         if (parsed.data.estado === 'Activo') {
           activeClients.push(parsed.data)
+        } else if (parsed.data.estado === 'Suspendido') {
+          suspendedClients++
         }
       } else {
         validationWarnings++
@@ -95,7 +97,7 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
 
     const data: MetricsData = {
       activeClients: activeClients.length,
-      connectedClients: null,   // MET-02: no endpoint available — 02-api-shapes.md confirmed
+      suspendedClients,
       pendingDebt: Math.round(pendingDebt * 100) / 100,
       monthlyRevenue: Math.round(monthlyRevenue * 100) / 100,
       fetchedAt: now.toISOString(),

@@ -21,7 +21,7 @@ export interface BffInvoice {
 // ── Respuesta GET /api/metrics ──
 export interface MetricsData {
   activeClients: number
-  connectedClients: null        // SIEMPRE null — MET-02 no disponible en Wisphub
+  suspendedClients: number      // Clientes con estado === 'Suspendido' en Wisphub
   pendingDebt: number
   monthlyRevenue: number
   fetchedAt: string

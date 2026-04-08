@@ -13,23 +13,23 @@
 
 ### Métricas Principales
 
-- [ ] **MET-01**: El administrador puede ver el total de clientes activos en tiempo real
-- [ ] **MET-02**: El administrador puede ver cuántos clientes están conectados ahora mismo
-- [ ] **MET-03**: El administrador puede ver el total de deuda pendiente (clientes morosos)
-- [ ] **MET-04**: El administrador puede ver los ingresos del mes actual
+- [x] **MET-01**: El administrador puede ver el total de clientes activos en tiempo real
+- [x] **MET-02**: El administrador puede ver cuántos clientes están conectados ahora mismo
+- [x] **MET-03**: El administrador puede ver el total de deuda pendiente (clientes morosos)
+- [x] **MET-04**: El administrador puede ver los ingresos del mes actual
 
 ### Facturas
 
-- [ ] **FAC-01**: El administrador puede ver el listado de facturas pendientes de pago
-- [ ] **FAC-02**: La lista de facturas muestra: nombre del cliente, monto, y días de atraso
+- [x] **FAC-01**: El administrador puede ver el listado de facturas pendientes de pago
+- [x] **FAC-02**: La lista de facturas muestra: nombre del cliente, monto, y días de atraso
 
 ### Controles y UX
 
 - [x] **UX-01**: El administrador puede actualizar todos los datos con un botón de recarga manual
 - [ ] **UX-02**: El botón de recarga se deshabilita durante la carga y muestra estado de espera (cooldown para evitar rate limit)
 - [x] **UX-03**: Cada sección muestra un indicador de carga (spinner/skeleton) mientras se obtienen los datos
-- [ ] **UX-04**: Cada sección muestra un mensaje de error claro si la llamada a Wisphub falla
-- [ ] **UX-05**: El dashboard muestra el timestamp de "última actualización" después de cada carga exitosa
+- [x] **UX-04**: Cada sección muestra un mensaje de error claro si la llamada a Wisphub falla
+- [x] **UX-05**: El dashboard muestra el timestamp de "última actualización" después de cada carga exitosa
 
 ### Diseño
 
@@ -72,17 +72,17 @@
 | API-03 | Phase 1 | Pending |
 | UI-01 | Phase 1 | Pending |
 | UI-02 | Phase 1 | Pending |
-| MET-01 | Phase 2 | Pending |
-| MET-02 | Phase 2 | Pending |
-| MET-03 | Phase 2 | Pending |
-| MET-04 | Phase 2 | Pending |
-| FAC-01 | Phase 2 | Pending |
-| FAC-02 | Phase 2 | Pending |
+| MET-01 | Phase 2 | Complete |
+| MET-02 | Phase 2 | Complete |
+| MET-03 | Phase 2 | Complete |
+| MET-04 | Phase 2 | Complete |
+| FAC-01 | Phase 2 | Complete |
+| FAC-02 | Phase 2 | Complete |
 | UX-01 | Phase 2 | Complete |
 | UX-02 | Phase 2 | Pending |
 | UX-03 | Phase 2 | Complete |
-| UX-04 | Phase 2 | Pending |
-| UX-05 | Phase 2 | Pending |
+| UX-04 | Phase 2 | Complete |
+| UX-05 | Phase 2 | Complete |
 
 **Coverage:**
 - v1 requirements: 16 total

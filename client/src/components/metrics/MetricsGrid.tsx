@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Users, UserX, DollarSign, TrendingUp } from 'lucide-react'
+import { Users, UserX, DollarSign, TrendingUp, UserPlus } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
 import { ClientsDrawer } from './ClientsDrawer'
 import { InvoicesDrawer } from './InvoicesDrawer'
+import { InstalledClientsDrawer } from './InstalledClientsDrawer'
 import type { MetricsData } from '@/types/api'
 
 function formatCOP(amount: number): string {
@@ -28,10 +29,12 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const { data, isLoading, isError, error } = useMetrics()
   const [drawerEstado, setDrawerEstado] = useState<'Activo' | 'Suspendido' | null>(null)
   const [invoicesDrawer, setInvoicesDrawer] = useState<'revenue' | 'pending' | null>(null)
+  const [installedDrawerOpen, setInstalledDrawerOpen] = useState(false)
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
@@ -59,7 +62,7 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <MetricCard
           title="Clientes activos"
           value={formatNumber(metrics.activeClients)}
@@ -92,6 +95,14 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
           iconClassName="text-brand"
           onClick={() => setInvoicesDrawer('revenue')}
         />
+        <MetricCard
+          title="Instalados este mes"
+          value={formatNumber(metrics.installedThisMonth ?? 0)}
+          subtitle="Nuevas instalaciones en el mes"
+          icon={UserPlus}
+          iconClassName="text-brand"
+          onClick={() => setInstalledDrawerOpen(true)}
+        />
       </div>
 
       <ClientsDrawer
@@ -101,6 +112,10 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
       <InvoicesDrawer
         type={invoicesDrawer}
         onClose={() => setInvoicesDrawer(null)}
+      />
+      <InstalledClientsDrawer
+        isOpen={installedDrawerOpen}
+        onClose={() => setInstalledDrawerOpen(false)}
       />
     </>
   )

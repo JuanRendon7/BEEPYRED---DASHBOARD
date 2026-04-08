@@ -109,3 +109,30 @@ export interface InstalledClientsResponse {
 }
 
 export type InstalledClientsApiResponse = InstalledClientsResponse | BffErrorResponse
+
+// ── Crecimiento histórico ──
+export interface GrowthClientPoint {
+  month: string
+  newClients: number
+  totalClients: number
+}
+
+export interface GrowthRevenuePoint {
+  month: string
+  revenue: number
+  totalRevenue: number
+}
+
+export interface GrowthData {
+  clientGrowth: GrowthClientPoint[]
+  revenueHistory: GrowthRevenuePoint[]
+  fetchedAt: string
+}
+
+export interface GrowthResponse {
+  success: true
+  data: GrowthData
+  cached?: boolean
+}
+
+export type GrowthApiResponse = GrowthResponse | BffErrorResponse

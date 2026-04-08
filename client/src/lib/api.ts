@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { MetricsData, InvoicesData, ClientsData } from '@/types/api'
+import type { MetricsData, InvoicesData, ClientsData, GrowthData } from '@/types/api'
 
 // Axios instance — el baseURL es relativo porque Vite proxea /api/* a localhost:3001
 const http = axios.create({
@@ -44,6 +44,19 @@ export async function fetchClients(): Promise<ClientsData> {
   if (!response.data.success) {
     const err = response.data as unknown as { error: { message: string } }
     throw new Error(err.error?.message ?? 'Error desconocido al obtener clientes')
+  }
+
+  return response.data.data
+}
+
+// ── fetchGrowth ──
+// Llama GET /api/growth y devuelve GrowthData (throws en error)
+export async function fetchGrowth(): Promise<GrowthData> {
+  const response = await http.get<{ success: boolean; data: GrowthData; error?: unknown }>('/api/growth')
+
+  if (!response.data.success) {
+    const err = response.data as unknown as { error: { message: string } }
+    throw new Error(err.error?.message ?? 'Error desconocido al obtener datos de crecimiento')
   }
 
   return response.data.data

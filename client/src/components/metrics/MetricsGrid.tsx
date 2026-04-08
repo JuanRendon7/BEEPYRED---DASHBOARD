@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2 } from 'lucide-react'
+import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2, Layers } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
@@ -7,6 +7,7 @@ import { ClientsDrawer } from './ClientsDrawer'
 import { InvoicesDrawer } from './InvoicesDrawer'
 import { InstalledClientsDrawer } from './InstalledClientsDrawer'
 import { GrowthDrawer } from './GrowthDrawer'
+import { PlansDrawer } from './PlansDrawer'
 import type { MetricsData } from '@/types/api'
 
 function formatCOP(amount: number): string {
@@ -32,6 +33,7 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const [invoicesDrawer, setInvoicesDrawer] = useState<'revenue' | 'pending' | null>(null)
   const [installedDrawerOpen, setInstalledDrawerOpen] = useState(false)
   const [growthDrawerOpen, setGrowthDrawerOpen] = useState(false)
+  const [plansDrawerOpen, setPlansDrawerOpen] = useState(false)
 
   if (isLoading) {
     return (
@@ -114,6 +116,14 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
           iconClassName="text-brand"
           onClick={() => setGrowthDrawerOpen(true)}
         />
+        <MetricCard
+          title="Distribución de planes"
+          value="Ver planes"
+          subtitle="Clientes y recaudo por plan"
+          icon={Layers}
+          iconClassName="text-brand"
+          onClick={() => setPlansDrawerOpen(true)}
+        />
       </div>
 
       <ClientsDrawer
@@ -131,6 +141,10 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
       <GrowthDrawer
         isOpen={growthDrawerOpen}
         onClose={() => setGrowthDrawerOpen(false)}
+      />
+      <PlansDrawer
+        isOpen={plansDrawerOpen}
+        onClose={() => setPlansDrawerOpen(false)}
       />
     </>
   )

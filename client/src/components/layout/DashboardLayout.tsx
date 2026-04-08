@@ -2,9 +2,10 @@ import type { ReactNode } from 'react'
 
 interface DashboardLayoutProps {
   children: ReactNode
+  headerActions?: ReactNode
 }
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function DashboardLayout({ children, headerActions }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-page text-text-primary">
       {/* Header — sticky per D-09 */}
@@ -26,8 +27,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <p className="text-xs text-text-muted">Panel de administración</p>
             </div>
           </div>
-          {/* Slot para el RefreshButton (Plan 05) */}
-          <div id="header-actions" />
+          {headerActions && (
+            <div className="flex items-center gap-3">
+              {headerActions}
+            </div>
+          )}
         </div>
       </header>
 

@@ -138,3 +138,29 @@ export interface GrowthResponse {
 }
 
 export type GrowthApiResponse = GrowthResponse | BffErrorResponse
+
+// ── Plan individual (BFF normalizado) ──
+export interface PlanStat {
+  nombre: string
+  clientCount: number
+  recaudo: number      // suma de precio_plan de clientes activos/gratis en este plan
+  avgPrecio: number    // recaudo / clientCount
+}
+
+// ── Respuesta GET /api/plans ──
+export interface PlansData {
+  plans: PlanStat[]
+  planMasPopular: string | null
+  totalPlanes: number
+  totalClientes: number
+  totalRecaudo: number
+  fetchedAt: string
+}
+
+export interface PlansResponse {
+  success: true
+  data: PlansData
+  cached?: boolean
+}
+
+export type PlansApiResponse = PlansResponse | BffErrorResponse

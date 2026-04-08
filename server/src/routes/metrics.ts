@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { fetchAllPages } from '../lib/wisphub'
-import { WisphubClientSchema, WisphubInvoiceSchema } from '../lib/schemas'
+import { WisphubClientSchema } from '../lib/schemas'
 import { cache } from '../lib/cache'
 import { z } from 'zod'
 
@@ -63,7 +63,6 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
     for (const raw of allInvoicesRaw.results) {
       const r = raw as any
       const estado: string = r.estado ?? ''
-      const saldo: number = typeof r.saldo === 'number' ? r.saldo : parseFloat(r.saldo ?? '0')
       const totalCobrado: number = typeof r.total_cobrado === 'number' ? r.total_cobrado : parseFloat(r.total_cobrado ?? '0')
       const fechaPago: string | null = r.fecha_pago ?? null
 

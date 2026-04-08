@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { fetchAllPages } from '../lib/wisphub'
-import { WisphubClientSchema, WisphubInvoiceSchema } from '../lib/schemas'
+import { WisphubClientSchema } from '../lib/schemas'
 import { cache } from '../lib/cache'
 
 export const clientsRouter = Router()
@@ -39,8 +39,6 @@ clientsRouter.get('/api/clients', async (_req: Request, res: Response) => {
     // Mapa id_servicio → deuda usando articulos[0].servicio.id_servicio
     // Se accede via casteo (any) para evitar problemas de validación Zod en campos internos
     const debtById = new Map<number, number>()
-    let invoiceParseErrors = 0
-
     for (const raw of allInvoicesRaw.results) {
       const r = raw as any
       // Solo "Pendiente de Pago" — en Wisphub saldo=0 pero total_cobrado tiene el monto prometido

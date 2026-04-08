@@ -41,30 +41,6 @@ app.use(metricsRouter)
 app.use(invoicesRouter)
 app.use(clientsRouter)
 
-// DEBUG — buscar la primera factura "Pendiente de Pago" y mostrarla completa
-import { wisphubClient } from './lib/wisphub'
-app.get('/api/debug/raw', async (_req, res) => {
-  // Traer las primeras 300 facturas y encontrar una "Pendiente de Pago"
-  const resp = await wisphubClient.get('/api/facturas/', { params: { limit: 300, offset: 0 } })
-  const todas: any[] = resp.data.results ?? []
-  const pendiente = todas.find((f: any) => f.estado !== 'Pagada' && f.estado !== 'Cancelada')
-  const estadosUnicos = [...new Set(todas.map((f: any) => f.estado))]
-
-  res.json({
-    total_facturas: resp.data.count,
-    estados_en_300: estadosUnicos,
-    primera_no_pagada: pendiente ?? 'ninguna en primeras 300',
-    campos_financieros: pendiente ? {
-      estado: pendiente.estado,
-      saldo: pendiente.saldo,
-      saldo_nuevo: pendiente.saldo_nuevo,
-      total: pendiente.total,
-      total_cobrado: pendiente.total_cobrado,
-      sub_total: pendiente.sub_total,
-    } : null,
-  })
-})
-
 // 404 handler for unregistered routes — must be after BFF routes, before errorHandler
 app.use((_req, res) => {
   res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Route not found' } })

@@ -43,7 +43,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Each section shows an inline error message if its Wisphub call fails, and the timestamp "last updated" appears after every successful load
 **Plans**: 5 planes
 Plans:
-- [ ] 02-01-PLAN.md — Design system: Tailwind v3.4.19 + PostCSS + shadcn/ui init + tokens BEEPYRED
+- [x] 02-01-PLAN.md — Design system: Tailwind v3.4.19 + PostCSS + shadcn/ui init + tokens BEEPYRED
 - [ ] 02-02-PLAN.md — API layer: tipos TypeScript BFF + hooks TanStack Query v5
 - [ ] 02-03-PLAN.md — Layout + MetricCard: DashboardLayout + MetricCard + MetricsGrid
 - [ ] 02-04-PLAN.md — InvoiceList: tabla de facturas con días de atraso + estados UX
@@ -70,5 +70,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/? | Not started | - |
-| 2. Core Dashboard | 0/5 | Planned | - |
+| 2. Core Dashboard | 1/5 | In Progress|  |
 | 3. Polish & Production | 0/? | Not started | - |

@@ -4,6 +4,7 @@ import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
 import { ClientsDrawer } from './ClientsDrawer'
+import { InvoicesDrawer } from './InvoicesDrawer'
 import type { MetricsData } from '@/types/api'
 
 function formatCOP(amount: number): string {
@@ -26,6 +27,7 @@ interface MetricsGridProps {
 export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const { data, isLoading, isError, error } = useMetrics()
   const [drawerEstado, setDrawerEstado] = useState<'Activo' | 'Suspendido' | null>(null)
+  const [invoicesDrawer, setInvoicesDrawer] = useState<'revenue' | 'pending' | null>(null)
 
   if (isLoading) {
     return (
@@ -75,11 +77,12 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
           onClick={() => setDrawerEstado('Suspendido')}
         />
         <MetricCard
-          title="Deuda pendiente"
+          title="Pendiente de recaudo"
           value={formatCOP(metrics.pendingDebt)}
-          subtitle="Saldo positivo total"
+          subtitle="Facturas pendientes y vencidas"
           icon={DollarSign}
           iconClassName="text-brand"
+          onClick={() => setInvoicesDrawer('pending')}
         />
         <MetricCard
           title="Ingresos del mes"
@@ -87,12 +90,17 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
           subtitle="Facturas pagadas este mes"
           icon={TrendingUp}
           iconClassName="text-brand"
+          onClick={() => setInvoicesDrawer('revenue')}
         />
       </div>
 
       <ClientsDrawer
         estado={drawerEstado}
         onClose={() => setDrawerEstado(null)}
+      />
+      <InvoicesDrawer
+        type={invoicesDrawer}
+        onClose={() => setInvoicesDrawer(null)}
       />
     </>
   )

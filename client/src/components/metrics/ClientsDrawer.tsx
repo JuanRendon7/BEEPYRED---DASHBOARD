@@ -9,6 +9,16 @@ interface ClientsDrawerProps {
   onClose: () => void
 }
 
+function abbreviateZona(zona: string | null): string | null {
+  if (!zona) return null
+  const lower = zona.toLowerCase()
+  if (lower.includes('nodo principal') || lower.includes('nodo_principal')) return 'Nodo principal'
+  if (lower.includes('prodigio')) return 'Prodigio'
+  if (lower.includes('altavista')) return 'Altavista'
+  if (lower.includes('rioclaro') || lower.includes('río claro') || lower.includes('rio claro')) return 'Rioclaro'
+  return zona
+}
+
 function formatCOP(amount: number): string {
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
@@ -143,7 +153,7 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
                       {client.plan ?? <span className="text-text-muted italic">—</span>}
                     </td>
                     <td className="px-3 py-3 text-text-secondary truncate max-w-[80px]">
-                      {client.zona ?? <span className="text-text-muted italic">—</span>}
+                      {abbreviateZona(client.zona) ?? <span className="text-text-muted italic">—</span>}
                     </td>
                     <td className="px-5 py-3 text-right text-text-primary tabular-nums">
                       {formatCOP(client.saldo)}

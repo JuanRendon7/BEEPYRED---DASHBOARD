@@ -27,22 +27,23 @@ export const WisphubClientSchema = z.object({
 })
 
 // ── Invoice/factura record schema ──
-// Field names and types confirmed from server/exploration/02-api-shapes.md
-// IMPORTANT: saldo and total are NUMBERS in invoice records (unlike client saldo which is a string)
+// Campos confirmados del debug de API real. saldo y total son numbers en facturas.
+// articulos: z.any() para no romper validación por campos internos variables
 export const WisphubInvoiceSchema = z.object({
   id_factura: z.number(),
   fecha_emision: z.string(),
   fecha_vencimiento: z.string(),
-  fecha_pago: z.string().nullable(),  // ISO datetime with timezone, null if unpaid
-  estado: z.string(),                  // "Pagada" | "Pendiente" | "Vencida" | "Cancelada"
-  total: z.number(),                   // NUMBER — total in pesos
-  saldo: z.number(),                   // NUMBER — pending amount (0 if paid)
+  fecha_pago: z.string().nullable(),         // null si no pagada
+  estado: z.string(),                        // "Pagada" | "Pendiente de Pago" | "Cancelada"
+  total: z.number(),
+  saldo: z.number(),                         // 0 si pagada, > 0 si pendiente
   total_cobrado: z.number(),
   cliente: z.object({
     nombre: z.string(),
     email: z.string().optional(),
     telefono: z.string().optional(),
   }),
+  articulos: z.array(z.any()).optional(),    // acceder via casteo: (raw as any).articulos
 })
 
 // ── Paginated list wrapper (DRF pagination — confirmed during exploration) ──

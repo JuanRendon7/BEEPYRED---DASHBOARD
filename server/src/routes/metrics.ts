@@ -50,50 +50,38 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
       console.warn(`[/api/metrics] ${validationWarnings} client records failed Zod validation`)
     }
 
-    // ── MET-03: Pending debt — sum of saldo from ALL clients with saldo > 0 ──
-    // saldo is a STRING in client records ("0.00") — confirmed in 02-api-shapes.md
-    const pendingDebt = allClientsRaw.results
-      .map((raw) => {
-        const parsed = WisphubClientSchema.safeParse(raw)
-        if (!parsed.success) return 0
-        return parseFloat(parsed.data.saldo) || 0
-      })
-      .filter((saldo) => saldo > 0)
-      .reduce((sum, saldo) => sum + saldo, 0)
-
-    // ── MET-04: Monthly revenue — paid invoices in current month ──
-    // Filter server-side: estado === 'Pagada' + fecha_pago in current month
     const now = new Date()
     const currentYear = now.getFullYear()
     const currentMonth = now.getMonth() // 0-indexed
 
+    // Fetch todas las facturas — acceso directo via casteo (any) sin Zod
     const allInvoicesRaw = await fetchAllPages<unknown>('/api/facturas/')
 
+    let pendingDebt = 0
     let monthlyRevenue = 0
-    let invoiceValidationWarnings = 0
 
     for (const raw of allInvoicesRaw.results) {
-      const parsed = WisphubInvoiceSchema.safeParse(raw)
-      if (!parsed.success) {
-        invoiceValidationWarnings++
-        continue
+      const r = raw as any
+      const estado: string = r.estado ?? ''
+      const saldo: number = typeof r.saldo === 'number' ? r.saldo : parseFloat(r.saldo ?? '0')
+      const totalCobrado: number = typeof r.total_cobrado === 'number' ? r.total_cobrado : parseFloat(r.total_cobrado ?? '0')
+      const fechaPago: string | null = r.fecha_pago ?? null
+
+      // Deuda pendiente — "Pendiente de Pago" usa total_cobrado (saldo siempre es 0)
+      if (estado === 'Pendiente de Pago') {
+        pendingDebt += totalCobrado
       }
 
-      const inv = parsed.data
-      if (inv.estado === 'Pagada' && inv.fecha_pago !== null) {
-        const paidDate = new Date(inv.fecha_pago)
-        if (
-          paidDate.getFullYear() === currentYear &&
-          paidDate.getMonth() === currentMonth
-        ) {
-          monthlyRevenue += inv.total_cobrado
+      // Ingresos del mes — Pagada con fecha_pago en el mes actual
+      if (estado === 'Pagada' && fechaPago) {
+        const paidDate = new Date(fechaPago)
+        if (paidDate.getFullYear() === currentYear && paidDate.getMonth() === currentMonth) {
+          monthlyRevenue += totalCobrado
         }
       }
     }
 
-    if (invoiceValidationWarnings > 0) {
-      console.warn(`[/api/metrics] ${invoiceValidationWarnings} invoice records failed Zod validation`)
-    }
+    console.log('[/api/metrics] facturas totales:', allInvoicesRaw.results.length, '| pendingDebt:', pendingDebt, '| monthlyRevenue:', monthlyRevenue)
 
     const data: MetricsData = {
       activeClients: activeClients.length,

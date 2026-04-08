@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Users, UserX, DollarSign, TrendingUp } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
+import { ClientsDrawer } from './ClientsDrawer'
 import type { MetricsData } from '@/types/api'
 
 function formatCOP(amount: number): string {
@@ -23,6 +25,7 @@ interface MetricsGridProps {
 
 export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const { data, isLoading, isError, error } = useMetrics()
+  const [drawerEstado, setDrawerEstado] = useState<'Activo' | 'Suspendido' | null>(null)
 
   if (isLoading) {
     return (
@@ -53,35 +56,44 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   if (!metrics) return null
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <MetricCard
-        title="Clientes activos"
-        value={formatNumber(metrics.activeClients)}
-        subtitle="Estado Activo en Wisphub"
-        icon={Users}
-        iconClassName="text-text-secondary"
+    <>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          title="Clientes activos"
+          value={formatNumber(metrics.activeClients)}
+          subtitle="Estado Activo en Wisphub"
+          icon={Users}
+          iconClassName="text-text-secondary"
+          onClick={() => setDrawerEstado('Activo')}
+        />
+        <MetricCard
+          title="Clientes suspendidos"
+          value={formatNumber(metrics.suspendedClients)}
+          subtitle="Estado Suspendido en Wisphub"
+          icon={UserX}
+          iconClassName="text-error"
+          onClick={() => setDrawerEstado('Suspendido')}
+        />
+        <MetricCard
+          title="Deuda pendiente"
+          value={formatCOP(metrics.pendingDebt)}
+          subtitle="Saldo positivo total"
+          icon={DollarSign}
+          iconClassName="text-brand"
+        />
+        <MetricCard
+          title="Ingresos del mes"
+          value={formatCOP(metrics.monthlyRevenue)}
+          subtitle="Facturas pagadas este mes"
+          icon={TrendingUp}
+          iconClassName="text-brand"
+        />
+      </div>
+
+      <ClientsDrawer
+        estado={drawerEstado}
+        onClose={() => setDrawerEstado(null)}
       />
-      <MetricCard
-        title="Clientes suspendidos"
-        value={formatNumber(metrics.suspendedClients)}
-        subtitle="Estado Suspendido en Wisphub"
-        icon={UserX}
-        iconClassName="text-error"
-      />
-      <MetricCard
-        title="Deuda pendiente"
-        value={formatCOP(metrics.pendingDebt)}
-        subtitle="Saldo positivo total"
-        icon={DollarSign}
-        iconClassName="text-brand"
-      />
-      <MetricCard
-        title="Ingresos del mes"
-        value={formatCOP(metrics.monthlyRevenue)}
-        subtitle="Facturas pagadas este mes"
-        icon={TrendingUp}
-        iconClassName="text-brand"
-      />
-    </div>
+    </>
   )
 }

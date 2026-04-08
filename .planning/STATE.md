@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.4.19
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-dashboard-02-04-PLAN.md
-last_updated: "2026-04-08T03:17:38.185Z"
+stopped_at: Completed 02-core-dashboard — all 5 plans done
+last_updated: "2026-04-08T16:00:00.000Z"
 last_activity: 2026-04-08
 progress:
   total_phases: 3
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 7
+  percent: 88
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** El administrador puede ver de un vistazo el estado real de la empresa — clientes, red y finanzas — sin abrir Wisphub directamente.
-**Current focus:** Phase 02 — core-dashboard
+**Current focus:** Phase 03 — next phase
 
 ## Current Position
 
-Phase: 02 (core-dashboard) — EXECUTING
-Plan: 5 of 5
-Status: Ready to execute
+Phase: 02 (core-dashboard) — COMPLETE ✓
+Plan: 5 of 5 — all done
+Status: Ready for Phase 03
 Last activity: 2026-04-08
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████████░░] 88%
 
 ## Performance Metrics
 
@@ -89,8 +89,14 @@ None yet.
 - [Phase 1 Risk]: Wisphub API unknowns (pagination, field names, rate limits, token expiry) are LOW confidence — must be validated empirically with real credentials before Phase 2 can begin
 - [Phase 1 Risk]: If Wisphub paginates results, BFF must handle multi-page aggregation — metric totals will be wrong otherwise
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260408-i7u | Nueva MetricCard "Instalados este mes" + fix activeClients incluir Gratis | 2026-04-08 | 0835dbd | [260408-i7u](./quick/260408-i7u-nueva-metrica-clientes-instalados-mes-fi/) |
+
 ## Session Continuity
 
-Last session: 2026-04-08T03:17:38.182Z
-Stopped at: Completed 02-core-dashboard-02-04-PLAN.md
+Last session: 2026-04-08T18:30:00.000Z
+Stopped at: Quick task 260408-i7u completa — nueva card Instalados + fix Gratis + InstalledClientsDrawer
 Resume file: None

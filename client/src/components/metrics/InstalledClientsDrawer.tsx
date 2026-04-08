@@ -18,9 +18,9 @@ function abbreviateZona(zona: string | null): string | null {
   return zona
 }
 
-function formatFecha(iso: string): string {
-  const [year, month, day] = iso.split('-')
-  return `${day}/${month}/${year}`
+function formatFecha(fecha: string): string {
+  // Format from Wisphub: "DD/MM/YYYY HH:MM:SS" — take only the date part
+  return fecha.split(' ')[0]
 }
 
 export function InstalledClientsDrawer({ isOpen, onClose }: InstalledClientsDrawerProps) {

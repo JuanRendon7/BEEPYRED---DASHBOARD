@@ -59,9 +59,11 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
 
     for (const raw of allClientsRaw.results) {
       const parsed = WisphubClientSchema.safeParse(raw)
-      if (parsed.success && parsed.data.fecha_alta) {
-        const [year, month] = parsed.data.fecha_alta.split('-').map(Number)
-        if (year === currentYear && month === currentMonth + 1) { // currentMonth is 0-indexed
+      if (parsed.success && parsed.data.fecha_instalacion) {
+        // Format: "DD/MM/YYYY HH:MM:SS"
+        const [, monthStr, yearStr] = parsed.data.fecha_instalacion.split(' ')[0].split('/')
+        const year = Number(yearStr), month = Number(monthStr)
+        if (!isNaN(year) && !isNaN(month) && year === currentYear && month === currentMonth + 1) {
           installedThisMonth++
         }
       }

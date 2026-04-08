@@ -10,7 +10,7 @@ export const WisphubClientSchema = z.object({
   saldo: z.string(),            // STRING ("0.00") — confirmed from exploration; use parseFloat() to operate
   precio_plan: z.string(),      // STRING ("63000.00") — confirmed from exploration
   estado_facturas: z.string().optional(),
-  fecha_alta: z.string().optional(),   // "YYYY-MM-DD" — fecha de instalacion/alta del servicio
+  fecha_instalacion: z.string().optional(),  // "DD/MM/YYYY HH:MM:SS" — confirmado de API real
   plan_internet: z.object({
     id: z.number(),
     nombre: z.string(),

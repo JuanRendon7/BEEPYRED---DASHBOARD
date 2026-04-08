@@ -134,16 +134,18 @@ clientsRouter.get('/api/clients/installed-this-month', async (_req: Request, res
     for (const raw of allRaw.results) {
       const parsed = WisphubClientSchema.safeParse(raw)
       if (!parsed.success) { validationWarnings++; continue }
-      if (!parsed.data.fecha_alta) continue
+      if (!parsed.data.fecha_instalacion) continue
 
-      const [year, month] = parsed.data.fecha_alta.split('-').map(Number)
-      if (year !== currentYear || month !== currentMonth) continue
+      // Format: "DD/MM/YYYY HH:MM:SS" — confirmed from real API response
+      const [, monthStr, yearStr] = parsed.data.fecha_instalacion.split(' ')[0].split('/')
+      const year = Number(yearStr), month = Number(monthStr)
+      if (isNaN(year) || isNaN(month) || year !== currentYear || month !== currentMonth) continue
 
       clients.push({
         nombre: parsed.data.nombre,
         plan: parsed.data.plan_internet?.nombre ?? null,
         zona: parsed.data.zona?.nombre ?? null,
-        fechaAlta: parsed.data.fecha_alta,
+        fechaAlta: parsed.data.fecha_instalacion,
       })
     }
 

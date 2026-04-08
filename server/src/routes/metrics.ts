@@ -14,6 +14,7 @@ interface MetricsData {
   suspendedClients: number       // Clients with estado === 'Suspendido'
   pendingDebt: number            // Sum of saldo across all active clients with saldo > 0
   monthlyRevenue: number         // Sum of total_cobrado for paid invoices this month
+  installedThisMonth: number     // Clients with fecha_alta in current month/year
   fetchedAt: string
 }
 
@@ -36,7 +37,7 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
     for (const raw of allClientsRaw.results) {
       const parsed = WisphubClientSchema.safeParse(raw)
       if (parsed.success) {
-        if (parsed.data.estado === 'Activo') {
+        if (parsed.data.estado === 'Activo' || parsed.data.estado === 'Gratis') {
           activeClients.push(parsed.data)
         } else if (parsed.data.estado === 'Suspendido') {
           suspendedClients++
@@ -50,9 +51,21 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
       console.warn(`[/api/metrics] ${validationWarnings} client records failed Zod validation`)
     }
 
+    // ── installedThisMonth: clients with fecha_alta in current month ──
+    let installedThisMonth = 0
     const now = new Date()
     const currentYear = now.getFullYear()
     const currentMonth = now.getMonth() // 0-indexed
+
+    for (const raw of allClientsRaw.results) {
+      const parsed = WisphubClientSchema.safeParse(raw)
+      if (parsed.success && parsed.data.fecha_alta) {
+        const [year, month] = parsed.data.fecha_alta.split('-').map(Number)
+        if (year === currentYear && month === currentMonth + 1) { // currentMonth is 0-indexed
+          installedThisMonth++
+        }
+      }
+    }
 
     // Fetch todas las facturas — acceso directo via casteo (any) sin Zod
     const allInvoicesRaw = await fetchAllPages<unknown>('/api/facturas/')
@@ -87,6 +100,7 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
       suspendedClients,
       pendingDebt: Math.round(pendingDebt * 100) / 100,
       monthlyRevenue: Math.round(monthlyRevenue * 100) / 100,
+      installedThisMonth,
       fetchedAt: now.toISOString(),
     }
 

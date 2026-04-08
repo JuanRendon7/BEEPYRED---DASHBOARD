@@ -59,3 +59,27 @@ export interface BffErrorResponse {
 // ── Helper: discriminated union para type-safe error handling ──
 export type MetricsApiResponse = MetricsResponse | BffErrorResponse
 export type InvoicesApiResponse = InvoicesResponse | BffErrorResponse
+
+// ── Cliente individual (BFF normalizado) ──
+export interface BffClient {
+  nombre: string
+  estado: string          // "Activo" | "Suspendido" | "Cancelado"
+  saldo: number           // ya parseado como número
+  plan: string | null     // plan_internet.nombre o null
+  zona: string | null     // zona.nombre o null
+}
+
+// ── Respuesta GET /api/clients ──
+export interface ClientsData {
+  clients: BffClient[]
+  totalCount: number
+  fetchedAt: string
+}
+
+export interface ClientsResponse {
+  success: true
+  data: ClientsData
+  cached?: boolean
+}
+
+export type ClientsApiResponse = ClientsResponse | BffErrorResponse

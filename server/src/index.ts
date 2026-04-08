@@ -4,6 +4,7 @@ import cors from 'cors'
 import { z } from 'zod'
 import { metricsRouter } from './routes/metrics'
 import { invoicesRouter } from './routes/invoices'
+import { clientsRouter } from './routes/clients'
 import { errorHandler } from './middleware/errorHandler'
 
 // Env validation — fail fast if required vars are missing (per D-16, Claude's Discretion)
@@ -38,6 +39,7 @@ app.get('/api/health', (_req, res) => {
 // BFF routes
 app.use(metricsRouter)
 app.use(invoicesRouter)
+app.use(clientsRouter)
 
 // 404 handler for unregistered routes — must be after BFF routes, before errorHandler
 app.use((_req, res) => {

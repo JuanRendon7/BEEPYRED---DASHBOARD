@@ -224,7 +224,8 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
                       name="Acumulado"
                       stroke="#FFFFFF"
                       strokeWidth={2}
-                      dot={false}
+                      dot={{ r: 4, fill: '#FFFFFF' }}
+                      activeDot={{ r: 6 }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>

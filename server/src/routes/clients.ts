@@ -27,13 +27,15 @@ interface InstalledClientRecord {
   nombre: string
   plan: string | null
   zona: string | null
-  fechaAlta: string   // ISO date string "YYYY-MM-DD"
+  fechaAlta: string
+  precioPlan: number
 }
 
 interface InstalledClientsData {
   clients: InstalledClientRecord[]
   totalCount: number
-  month: number       // 1-indexed
+  totalRevenue: number
+  month: number
   year: number
   fetchedAt: string
 }
@@ -146,6 +148,7 @@ clientsRouter.get('/api/clients/installed-this-month', async (_req: Request, res
         plan: parsed.data.plan_internet?.nombre ?? null,
         zona: parsed.data.zona?.nombre ?? null,
         fechaAlta: parsed.data.fecha_instalacion,
+        precioPlan: parseFloat(parsed.data.precio_plan ?? '0') || 0,
       })
     }
 
@@ -153,9 +156,12 @@ clientsRouter.get('/api/clients/installed-this-month', async (_req: Request, res
       console.warn(`[/api/clients/installed-this-month] ${validationWarnings} records failed Zod validation`)
     }
 
+    const totalRevenue = clients.reduce((sum, c) => sum + c.precioPlan, 0)
+
     const data: InstalledClientsData = {
       clients,
       totalCount: clients.length,
+      totalRevenue: Math.round(totalRevenue * 100) / 100,
       month: currentMonth,
       year: currentYear,
       fetchedAt: now.toISOString(),

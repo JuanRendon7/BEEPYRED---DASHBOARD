@@ -3,6 +3,15 @@ import { X, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useInstalledClients } from '@/hooks/useInstalledClients'
 
+function formatCOP(amount: number): string {
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
+
 interface InstalledClientsDrawerProps {
   isOpen: boolean
   onClose: () => void
@@ -111,6 +120,7 @@ export function InstalledClientsDrawer({ isOpen, onClose }: InstalledClientsDraw
                   <th className="px-5 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Cliente</th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Plan</th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Zona</th>
+                  <th className="px-3 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Valor/mes</th>
                   <th className="px-5 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Fecha alta</th>
                 </tr>
               </thead>
@@ -124,6 +134,9 @@ export function InstalledClientsDrawer({ isOpen, onClose }: InstalledClientsDraw
                     <td className="px-3 py-3 text-text-secondary truncate max-w-[80px]">
                       {abbreviateZona(client.zona) ?? <span className="text-text-muted italic">—</span>}
                     </td>
+                    <td className="px-3 py-3 text-right text-text-secondary tabular-nums">
+                      {formatCOP(client.precioPlan)}
+                    </td>
                     <td className="px-5 py-3 text-right text-text-secondary tabular-nums">
                       {formatFecha(client.fechaAlta)}
                     </td>
@@ -133,6 +146,18 @@ export function InstalledClientsDrawer({ isOpen, onClose }: InstalledClientsDraw
             </table>
           )}
         </div>
+
+        {/* Footer — total recaudo nuevos clientes */}
+        {!isLoading && !isError && data && data.totalRevenue > 0 && (
+          <div className="flex-shrink-0 border-t border-border px-5 py-4 flex items-center justify-between">
+            <span className="text-xs text-text-muted uppercase tracking-wider font-medium">
+              Recaudo mensual nuevos clientes
+            </span>
+            <span className="text-sm font-semibold text-brand tabular-nums">
+              {formatCOP(data.totalRevenue)}
+            </span>
+          </div>
+        )}
       </div>
     </>
   )

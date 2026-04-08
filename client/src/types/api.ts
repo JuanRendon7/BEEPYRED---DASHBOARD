@@ -90,13 +90,15 @@ export interface BffInstalledClient {
   nombre: string
   plan: string | null
   zona: string | null
-  fechaAlta: string   // "YYYY-MM-DD"
+  fechaAlta: string   // "DD/MM/YYYY HH:MM:SS"
+  precioPlan: number  // valor mensual del plan en COP
 }
 
 // ── Respuesta GET /api/clients/installed-this-month ──
 export interface InstalledClientsData {
   clients: BffInstalledClient[]
   totalCount: number
+  totalRevenue: number  // suma de precio_plan de todos los instalados este mes
   month: number
   year: number
   fetchedAt: string

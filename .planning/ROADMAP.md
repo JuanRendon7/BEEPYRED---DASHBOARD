@@ -45,7 +45,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 02-01-PLAN.md — Design system: Tailwind v3.4.19 + PostCSS + shadcn/ui init + tokens BEEPYRED
 - [x] 02-02-PLAN.md — API layer: tipos TypeScript BFF + hooks TanStack Query v5
-- [ ] 02-03-PLAN.md — Layout + MetricCard: DashboardLayout + MetricCard + MetricsGrid
+- [x] 02-03-PLAN.md — Layout + MetricCard: DashboardLayout + MetricCard + MetricsGrid
 - [ ] 02-04-PLAN.md — InvoiceList: tabla de facturas con días de atraso + estados UX
 - [ ] 02-05-PLAN.md — Refresh button + timestamp + wiring final en App.tsx
 **UI hint**: yes

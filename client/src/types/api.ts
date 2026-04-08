@@ -24,6 +24,7 @@ export interface MetricsData {
   suspendedClients: number      // Clientes con estado === 'Suspendido' en Wisphub
   pendingDebt: number
   monthlyRevenue: number
+  installedThisMonth: number    // Clientes con fecha_alta en el mes actual (0 si campo no disponible)
   fetchedAt: string
 }
 
@@ -83,3 +84,28 @@ export interface ClientsResponse {
 }
 
 export type ClientsApiResponse = ClientsResponse | BffErrorResponse
+
+// ── Cliente instalado este mes (BFF normalizado) ──
+export interface BffInstalledClient {
+  nombre: string
+  plan: string | null
+  zona: string | null
+  fechaAlta: string   // "YYYY-MM-DD"
+}
+
+// ── Respuesta GET /api/clients/installed-this-month ──
+export interface InstalledClientsData {
+  clients: BffInstalledClient[]
+  totalCount: number
+  month: number
+  year: number
+  fetchedAt: string
+}
+
+export interface InstalledClientsResponse {
+  success: true
+  data: InstalledClientsData
+  cached?: boolean
+}
+
+export type InstalledClientsApiResponse = InstalledClientsResponse | BffErrorResponse

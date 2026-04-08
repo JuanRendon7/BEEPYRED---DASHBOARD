@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v3.4.19
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-core-dashboard/02-03-PLAN.md
-last_updated: "2026-04-08T01:41:08.787Z"
+stopped_at: Completed 02-core-dashboard-02-04-PLAN.md
+last_updated: "2026-04-08T03:17:38.185Z"
 last_activity: 2026-04-08
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 8
-  completed_plans: 5
-  percent: 63
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-06)
 ## Current Position
 
 Phase: 02 (core-dashboard) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-04-08
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-core-dashboard P02-01 | 25 | 2 tasks | 9 files |
 | Phase 02-core-dashboard P02-02 | 15 | 2 tasks | 5 files |
 | Phase 02-core-dashboard P02-03 | 15 | 2 tasks | 5 files |
+| Phase 02-core-dashboard P02-04 | 15 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,8 @@ Recent decisions affecting current work:
 - [Phase 02-core-dashboard]: connectedClients muestra N/D hardcoded en MetricsGrid — MET-02 no disponible en Wisphub
 - [Phase 02-core-dashboard]: formatCOP usa Intl.NumberFormat locale es-CO — produce formato $ 9.551.300
 - [Phase 02-core-dashboard]: MetricCard recibe value como string pre-formateada — no formatea internamente
+- [Phase 02-core-dashboard]: Filtro primario saldo > 0 (no por campo estado) — el saldo es la fuente de verdad para deuda pendiente en Wisphub
+- [Phase 02-core-dashboard]: calcularDiasAtraso parsea fecha local via split('-').map(Number) para evitar off-by-one por timezone UTC
 
 ### Pending Todos
 
@@ -88,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-08T01:41:08.784Z
-Stopped at: Completed 02-core-dashboard/02-03-PLAN.md
+Last session: 2026-04-08T03:17:38.182Z
+Stopped at: Completed 02-core-dashboard-02-04-PLAN.md
 Resume file: None

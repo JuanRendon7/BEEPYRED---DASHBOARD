@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Users, UserX, DollarSign, TrendingUp, UserPlus } from 'lucide-react'
+import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2 } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
 import { ClientsDrawer } from './ClientsDrawer'
 import { InvoicesDrawer } from './InvoicesDrawer'
 import { InstalledClientsDrawer } from './InstalledClientsDrawer'
+import { GrowthDrawer } from './GrowthDrawer'
 import type { MetricsData } from '@/types/api'
 
 function formatCOP(amount: number): string {
@@ -30,10 +31,12 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const [drawerEstado, setDrawerEstado] = useState<'Activo' | 'Suspendido' | null>(null)
   const [invoicesDrawer, setInvoicesDrawer] = useState<'revenue' | 'pending' | null>(null)
   const [installedDrawerOpen, setInstalledDrawerOpen] = useState(false)
+  const [growthDrawerOpen, setGrowthDrawerOpen] = useState(false)
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
@@ -62,7 +65,7 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
         <MetricCard
           title="Clientes activos"
           value={formatNumber(metrics.activeClients)}
@@ -103,6 +106,14 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
           iconClassName="text-brand"
           onClick={() => setInstalledDrawerOpen(true)}
         />
+        <MetricCard
+          title="Crecimiento BEEPYRED"
+          value="Ver evolución"
+          subtitle="Histórico clientes e ingresos"
+          icon={BarChart2}
+          iconClassName="text-brand"
+          onClick={() => setGrowthDrawerOpen(true)}
+        />
       </div>
 
       <ClientsDrawer
@@ -116,6 +127,10 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
       <InstalledClientsDrawer
         isOpen={installedDrawerOpen}
         onClose={() => setInstalledDrawerOpen(false)}
+      />
+      <GrowthDrawer
+        isOpen={growthDrawerOpen}
+        onClose={() => setGrowthDrawerOpen(false)}
       />
     </>
   )

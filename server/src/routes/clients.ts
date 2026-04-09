@@ -10,11 +10,16 @@ const INSTALLED_CACHE_KEY = 'clients:installed-this-month'
 const CACHE_TTL_MS = 30_000
 
 interface BffClientRecord {
+  id_servicio: number
   nombre: string
   estado: string
-  saldo: number          // suma de saldos de facturas pendientes/vencidas del cliente
-  plan: string | null    // plan_internet.nombre o null
-  zona: string | null    // zona.nombre o null
+  plan: string | null              // plan_internet.nombre o null
+  precio_plan: number
+  zona: string | null              // zona.nombre o null
+  saldo: number                    // suma de saldos de facturas pendientes/vencidas del cliente
+  fecha_instalacion: string | null
+  estado_facturas: string | null
+  router: string | null
 }
 
 interface ClientsData {
@@ -82,11 +87,16 @@ clientsRouter.get('/api/clients', async (_req: Request, res: Response) => {
       const parsed = WisphubClientSchema.safeParse(raw)
       if (parsed.success) {
         clients.push({
+          id_servicio: parsed.data.id_servicio,
           nombre: parsed.data.nombre,
           estado: parsed.data.estado,
-          saldo: Math.round((debtById.get(parsed.data.id_servicio) ?? 0) * 100) / 100,
           plan: parsed.data.plan_internet?.nombre ?? null,
+          precio_plan: parseFloat(parsed.data.precio_plan ?? '0') || 0,
           zona: parsed.data.zona?.nombre ?? null,
+          saldo: Math.round((debtById.get(parsed.data.id_servicio) ?? 0) * 100) / 100,
+          fecha_instalacion: parsed.data.fecha_instalacion ?? null,
+          estado_facturas: parsed.data.estado_facturas ?? null,
+          router: parsed.data.router?.nombre ?? null,
         })
       } else {
         validationWarnings++

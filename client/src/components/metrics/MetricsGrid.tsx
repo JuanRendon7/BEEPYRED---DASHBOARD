@@ -103,7 +103,7 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
         <MetricCard
           title="Pendiente de recaudo"
           value={formatCOP(metrics.pendingDebt)}
-          subtitle="Facturas pendientes y vencidas"
+          subtitle="Basado en facturas API · puede diferir de Wisphub"
           icon={DollarSign}
           iconClassName="text-brand"
           onClick={() => setInvoicesDrawer('pending')}
@@ -111,7 +111,7 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
         <MetricCard
           title="Ingresos del mes"
           value={formatCOP(metrics.monthlyRevenue)}
-          subtitle="Facturas pagadas este mes"
+          subtitle="Basado en facturas API · puede diferir de Wisphub"
           icon={TrendingUp}
           iconClassName="text-brand"
           onClick={() => setInvoicesDrawer('revenue')}

@@ -4,7 +4,13 @@
       "WebSearch",
       "Skill(gsd-execute-phase)",
       "Bash(./node_modules/.bin/tsc:*)",
-      "Bash(node_modules/.bin/tsc:*)"
+      "Bash(node_modules/.bin/tsc:*)",
+      "Bash(node:*)",
+      "Bash(npm view:*)",
+      "Bash(npx tsc:*)",
+      "Skill(gsd-quick)",
+      "Bash(xargs:*)",
+      "WebFetch(domain:wisphub.net)"
     ]
   }
 }

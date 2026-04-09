@@ -28,3 +28,32 @@
 @layer utilities {
   .tabular-nums { font-variant-numeric: tabular-nums; }
 }
+
+/* Card shimmer sweep animation */
+@keyframes shimmer-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes border-glow {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(245, 168, 0, 0.06) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: none;
+}
+
+.card-shimmer:hover::after {
+  animation: shimmer-sweep 0.7s ease forwards;
+}

@@ -103,16 +103,7 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
               {baseClients.length}
             </span>
           </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => exportToExcel(filteredClients, estado ?? 'activos')}
-              disabled={filteredClients.length === 0}
-              className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Exportar a Excel"
-              title="Exportar a Excel"
-            >
-              <Download className="h-4 w-4" />
-            </button>
+          <div className="flex items-center gap-2">
             <button
               onClick={onClose}
               className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
@@ -123,18 +114,26 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
           </div>
         </div>
 
-        {/* Search input */}
-        <div className="px-6 py-3 border-b border-border flex-shrink-0">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+        {/* Search + Export row */}
+        <div className="px-6 py-3 border-b border-border flex-shrink-0 flex items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-muted" />
             <input
               type="text"
               placeholder="Buscar cliente..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-page border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-brand/50 focus:border-brand/50 transition-all duration-200"
+              className="w-full bg-page border border-border rounded-lg pl-8 pr-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-brand/50 focus:border-brand/50 transition-all duration-200"
             />
           </div>
+          <button
+            onClick={() => exportToExcel(filteredClients, estado ?? 'activos')}
+            disabled={filteredClients.length === 0}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold bg-brand text-black hover:bg-brand-hover transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Descargar base de datos
+          </button>
         </div>
 
         {/* Drawer body — scrollable */}

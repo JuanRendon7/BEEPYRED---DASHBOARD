@@ -43,28 +43,28 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
       )
     : baseClients
 
-  const title = estado === 'Activo'
-    ? `Clientes activos (${baseClients.length})`
+  const titleBase = estado === 'Activo'
+    ? 'Clientes activos'
     : estado === 'Suspendido'
-    ? `Clientes suspendidos (${baseClients.length})`
+    ? 'Clientes suspendidos'
     : ''
 
   return (
     <>
-      {/* Overlay — z-40 (debajo del header z-50) */}
+      {/* Overlay */}
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/50 transition-opacity duration-300',
+          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300',
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Drawer panel — z-40, 400px ancho, desliza desde derecha */}
+      {/* Drawer panel */}
       <div
         className={cn(
-          'fixed top-0 right-0 z-40 h-full w-[600px] max-w-[95vw]',
+          'fixed top-0 right-0 z-40 h-full w-[520px] max-w-[95vw]',
           'bg-surface border-l border-border',
           'flex flex-col',
           'transform transition-transform duration-300 ease-in-out',
@@ -72,14 +72,19 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
         )}
         role="dialog"
         aria-modal="true"
-        aria-label={title}
+        aria-label={titleBase}
       >
-        {/* Drawer header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
-          <h2 className="text-sm font-semibold text-text-primary">{title}</h2>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
+          <div className="flex items-center">
+            <h2 className="text-sm font-semibold text-text-primary tracking-tight">{titleBase}</h2>
+            <span className="ml-2 inline-flex items-center rounded-full bg-white/8 px-2 py-0.5 text-xs font-medium text-text-muted ring-1 ring-inset ring-white/10">
+              {baseClients.length}
+            </span>
+          </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-text-muted hover:text-text-primary hover:bg-white/10 transition-colors"
+            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
             aria-label="Cerrar panel"
           >
             <X className="h-4 w-4" />
@@ -87,7 +92,7 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
         </div>
 
         {/* Search input */}
-        <div className="px-5 py-3 border-b border-border flex-shrink-0">
+        <div className="px-6 py-3 border-b border-border flex-shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
             <input
@@ -95,7 +100,7 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
               placeholder="Buscar cliente..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-page border border-border rounded-lg pl-9 pr-4 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand transition-colors"
+              className="w-full bg-page border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-brand/50 focus:border-brand/50 transition-all duration-200"
             />
           </div>
         </div>
@@ -103,59 +108,59 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
         {/* Drawer body — scrollable */}
         <div className="flex-1 overflow-y-auto">
           {isLoading && (
-            <div className="p-5 space-y-3">
+            <div className="p-6 space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-10 rounded-lg bg-white/5 animate-pulse" />
+                <div key={i} className="h-12 rounded-xl bg-white/[0.04] animate-pulse" />
               ))}
             </div>
           )}
 
           {isError && (
-            <div className="p-5">
-              <p className="text-sm text-error">Error al cargar clientes</p>
-              <p className="mt-1 text-xs text-text-muted">
+            <div className="m-6 rounded-xl border border-error/20 bg-error/5 p-4">
+              <p className="text-sm font-semibold text-error">Error al cargar clientes</p>
+              <p className="text-xs text-text-muted mt-1">
                 {error?.message ?? 'No se pudo obtener la lista de clientes'}
               </p>
             </div>
           )}
 
           {!isLoading && !isError && filteredClients.length === 0 && (
-            <div className="p-5">
+            <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
               <p className="text-sm text-text-muted">No hay clientes en este estado.</p>
             </div>
           )}
 
           {!isLoading && !isError && filteredClients.length > 0 && (
             <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-surface border-b border-border">
+              <thead className="sticky top-0 bg-surface/95 backdrop-blur-sm border-b border-border">
                 <tr>
-                  <th className="px-5 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                     Cliente
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                     Plan
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                     Zona
                   </th>
-                  <th className="px-5 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                     Saldo
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-border/60">
                 {filteredClients.map((client, idx) => (
-                  <tr key={idx} className="hover:bg-white/5 transition-colors">
-                    <td className="px-5 py-3 text-text-primary font-medium">
+                  <tr key={idx} className="hover:bg-white/[0.03] transition-colors duration-150">
+                    <td className="px-6 py-3.5 text-sm text-text-primary font-medium">
                       {client.nombre}
                     </td>
-                    <td className="px-3 py-3 text-text-secondary truncate max-w-[100px]">
+                    <td className="px-3 py-3.5 text-sm text-text-secondary truncate max-w-[100px]">
                       {client.plan ?? <span className="text-text-muted italic">—</span>}
                     </td>
-                    <td className="px-3 py-3 text-text-secondary truncate max-w-[80px]">
+                    <td className="px-3 py-3.5 text-sm text-text-secondary truncate max-w-[80px]">
                       {abbreviateZona(client.zona) ?? <span className="text-text-muted italic">—</span>}
                     </td>
-                    <td className="px-5 py-3 text-right text-text-primary tabular-nums">
+                    <td className="px-6 py-3.5 text-right text-sm text-text-primary tabular-nums font-medium">
                       {formatCOP(client.saldo)}
                     </td>
                   </tr>

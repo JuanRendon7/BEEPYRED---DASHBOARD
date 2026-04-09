@@ -63,11 +63,16 @@ export type InvoicesApiResponse = InvoicesResponse | BffErrorResponse
 
 // ── Cliente individual (BFF normalizado) ──
 export interface BffClient {
+  id_servicio: number
   nombre: string
-  estado: string          // "Activo" | "Suspendido" | "Cancelado"
-  saldo: number           // ya parseado como número
-  plan: string | null     // plan_internet.nombre o null
-  zona: string | null     // zona.nombre o null
+  estado: string               // "Activo" | "Suspendido" | "Cancelado"
+  plan: string | null          // plan_internet.nombre o null
+  precio_plan: number
+  zona: string | null          // zona.nombre o null
+  saldo: number                // ya parseado como número
+  fecha_instalacion: string | null
+  estado_facturas: string | null
+  router: string | null
 }
 
 // ── Respuesta GET /api/clients ──

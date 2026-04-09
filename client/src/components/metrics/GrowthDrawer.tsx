@@ -43,7 +43,9 @@ function formatCOPShort(v: number): string {
 const CHART_TOOLTIP_STYLE = {
   backgroundColor: '#18181B',
   border: '1px solid #27272A',
-  borderRadius: '8px',
+  borderRadius: '12px',
+  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.4)',
+  fontSize: '12px',
 }
 const CHART_LABEL_STYLE = { color: '#FFFFFF' }
 const CHART_ITEM_STYLE = { color: '#A1A1AA' }
@@ -56,7 +58,7 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
     <>
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/50 transition-opacity duration-300',
+          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300',
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
         onClick={onClose}
@@ -64,7 +66,7 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
       />
       <div
         className={cn(
-          'fixed top-0 right-0 z-40 h-full w-[700px] max-w-[95vw]',
+          'fixed top-0 right-0 z-40 h-full w-[680px] max-w-[95vw]',
           'bg-surface border-l border-border',
           'flex flex-col',
           'transform transition-transform duration-300 ease-in-out',
@@ -75,11 +77,11 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
         aria-label="Crecimiento BEEPYRED"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
-          <h2 className="text-sm font-semibold text-text-primary">Crecimiento BEEPYRED</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
+          <h2 className="text-sm font-semibold text-text-primary tracking-tight">Crecimiento BEEPYRED</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-text-muted hover:text-text-primary hover:bg-white/10 transition-colors"
+            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
             aria-label="Cerrar panel"
           >
             <X className="h-4 w-4" />
@@ -87,19 +89,19 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
 
           {isLoading && (
             <>
-              <div className="h-[260px] rounded-lg bg-white/5 animate-pulse" />
-              <div className="h-[260px] rounded-lg bg-white/5 animate-pulse" />
+              <div className="h-[260px] rounded-xl bg-white/[0.04] animate-pulse" />
+              <div className="h-[260px] rounded-xl bg-white/[0.04] animate-pulse" />
             </>
           )}
 
           {isError && (
-            <div className="p-4 rounded-lg border border-error/30 bg-error/10">
-              <p className="text-sm text-error">Error al cargar datos de crecimiento</p>
-              <p className="mt-1 text-xs text-text-muted">
+            <div className="rounded-xl border border-error/20 bg-error/5 p-4">
+              <p className="text-sm font-semibold text-error">Error al cargar datos de crecimiento</p>
+              <p className="text-xs text-text-muted mt-1">
                 {error?.message ?? 'No se pudo obtener el historial'}
               </p>
             </div>
@@ -109,7 +111,7 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
             <>
               {/* Sección Clientes */}
               <div>
-                <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-3">
                   Evolución de clientes
                 </p>
                 <ResponsiveContainer width="100%" height={260}>
@@ -168,7 +170,7 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
 
               {/* Sección Ingresos */}
               <div>
-                <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-3">
                   Ingresos mensuales
                 </p>
                 <ResponsiveContainer width="100%" height={260}>

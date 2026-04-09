@@ -37,8 +37,8 @@ export function LastUpdated() {
   if (!label) return null
 
   return (
-    <p className="text-xs text-text-muted" aria-live="polite">
-      Última actualización: {label}
+    <p className="text-xs text-text-muted font-medium" aria-live="polite">
+      · Última actualización: {label}
     </p>
   )
 }

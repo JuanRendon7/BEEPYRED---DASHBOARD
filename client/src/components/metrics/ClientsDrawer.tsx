@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { X, Search } from 'lucide-react'
+import { X, Search, Download } from 'lucide-react'
+import * as XLSX from 'xlsx'
 import { cn } from '@/lib/utils'
 import { useClients } from '@/hooks/useClients'
 import type { BffClient } from '@/types/api'
@@ -26,6 +27,26 @@ function formatCOP(amount: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount)
+}
+
+function exportToExcel(clients: BffClient[], estado: string) {
+  const date = new Date().toISOString().split('T')[0]
+  const rows = clients.map(c => ({
+    'ID Servicio': c.id_servicio,
+    'Nombre': c.nombre,
+    'Estado': c.estado,
+    'Plan': c.plan ?? '—',
+    'Precio Plan': c.precio_plan,
+    'Zona': c.zona ?? '—',
+    'Deuda': c.saldo,
+    'Fecha Instalación': c.fecha_instalacion ?? '—',
+    'Estado Facturas': c.estado_facturas ?? '—',
+    'Router': c.router ?? '—',
+  }))
+  const ws = XLSX.utils.json_to_sheet(rows)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Clientes')
+  XLSX.writeFile(wb, `clientes-beepyred-${estado.toLowerCase()}-${date}.xlsx`)
 }
 
 export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
@@ -64,7 +85,7 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
       {/* Drawer panel */}
       <div
         className={cn(
-          'fixed top-0 right-0 z-40 h-full w-[520px] max-w-[95vw]',
+          'fixed top-0 right-0 z-40 h-full w-[760px] max-w-[95vw]',
           'bg-surface border-l border-border',
           'flex flex-col',
           'transform transition-transform duration-300 ease-in-out',
@@ -82,13 +103,24 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
               {baseClients.length}
             </span>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
-            aria-label="Cerrar panel"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => exportToExcel(filteredClients, estado ?? 'activos')}
+              disabled={filteredClients.length === 0}
+              className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Exportar a Excel"
+              title="Exportar a Excel"
+            >
+              <Download className="h-4 w-4" />
+            </button>
+            <button
+              onClick={onClose}
+              className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
+              aria-label="Cerrar panel"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Search input */}
@@ -134,8 +166,11 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-surface/95 backdrop-blur-sm border-b border-border">
                 <tr>
-                  <th className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">
-                    Cliente
+                  <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted w-[60px]">
+                    ID
+                  </th>
+                  <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+                    Nombre
                   </th>
                   <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                     Plan
@@ -143,25 +178,40 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
                   <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                     Zona
                   </th>
-                  <th className="px-6 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-text-muted">
-                    Saldo
+                  <th className="px-3 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+                    Precio/mes
+                  </th>
+                  <th className="px-3 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+                    Deuda
+                  </th>
+                  <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+                    Est. Facturas
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
                 {filteredClients.map((client, idx) => (
                   <tr key={idx} className="hover:bg-white/[0.03] transition-colors duration-150">
-                    <td className="px-6 py-3.5 text-sm text-text-primary font-medium">
+                    <td className="px-3 py-3.5 text-xs text-text-muted tabular-nums">
+                      {client.id_servicio}
+                    </td>
+                    <td className="px-3 py-3.5 text-sm text-text-primary font-medium">
                       {client.nombre}
                     </td>
-                    <td className="px-3 py-3.5 text-sm text-text-secondary truncate max-w-[100px]">
+                    <td className="px-3 py-3.5 text-sm text-text-secondary truncate max-w-[110px]">
                       {client.plan ?? <span className="text-text-muted italic">—</span>}
                     </td>
-                    <td className="px-3 py-3.5 text-sm text-text-secondary truncate max-w-[80px]">
+                    <td className="px-3 py-3.5 text-sm text-text-secondary truncate max-w-[90px]">
                       {abbreviateZona(client.zona) ?? <span className="text-text-muted italic">—</span>}
                     </td>
-                    <td className="px-6 py-3.5 text-right text-sm text-text-primary tabular-nums font-medium">
+                    <td className="px-3 py-3.5 text-right text-sm text-text-secondary tabular-nums">
+                      {client.precio_plan > 0 ? formatCOP(client.precio_plan) : <span className="text-text-muted italic">—</span>}
+                    </td>
+                    <td className="px-3 py-3.5 text-right text-sm text-text-primary tabular-nums font-medium">
                       {formatCOP(client.saldo)}
+                    </td>
+                    <td className="px-4 py-3.5 text-sm text-text-secondary truncate max-w-[110px]">
+                      {client.estado_facturas ?? <span className="text-text-muted italic">—</span>}
                     </td>
                   </tr>
                 ))}

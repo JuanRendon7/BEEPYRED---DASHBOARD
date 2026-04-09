@@ -24,13 +24,13 @@ export function PlansDrawer({ isOpen, onClose }: PlansDrawerProps) {
   const { data, isLoading, isError, error } = usePlans()
 
   const plans = isOpen && data ? data.plans : []
-  const title = data ? `Planes de internet (${data.totalPlanes})` : 'Planes de internet'
+  const titleBase = 'Planes de internet'
 
   return (
     <>
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/50 transition-opacity duration-300',
+          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300',
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
         onClick={onClose}
@@ -38,7 +38,7 @@ export function PlansDrawer({ isOpen, onClose }: PlansDrawerProps) {
       />
       <div
         className={cn(
-          'fixed top-0 right-0 z-40 h-full w-[600px] max-w-[95vw]',
+          'fixed top-0 right-0 z-40 h-full w-[520px] max-w-[95vw]',
           'bg-surface border-l border-border',
           'flex flex-col',
           'transform transition-transform duration-300 ease-in-out',
@@ -46,30 +46,37 @@ export function PlansDrawer({ isOpen, onClose }: PlansDrawerProps) {
         )}
         role="dialog"
         aria-modal="true"
-        aria-label={title}
+        aria-label={titleBase}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
-          <h2 className="text-sm font-semibold text-text-primary">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
+          <div className="flex items-center">
+            <h2 className="text-sm font-semibold text-text-primary tracking-tight">{titleBase}</h2>
+            {data && (
+              <span className="ml-2 inline-flex items-center rounded-full bg-white/8 px-2 py-0.5 text-xs font-medium text-text-muted ring-1 ring-inset ring-white/10">
+                {data.totalPlanes}
+              </span>
+            )}
+          </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-text-muted hover:text-text-primary hover:bg-white/10 transition-colors"
+            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
             aria-label="Cerrar panel"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Plan más popular — destacado */}
+        {/* Plan más popular — featured banner */}
         {!isLoading && !isError && data && data.planMasPopular && (
-          <div className="flex-shrink-0 px-5 py-3 border-b border-border bg-brand/5">
+          <div className="flex-shrink-0 px-6 py-4 border-b border-border bg-gradient-to-r from-brand/5 to-transparent">
             <div className="flex items-center gap-2">
-              <Star className="h-3.5 w-3.5 text-brand flex-shrink-0" />
-              <span className="text-xs text-text-muted uppercase tracking-wider font-medium">
+              <Star className="h-4 w-4 text-brand flex-shrink-0" />
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 Plan más popular
               </span>
             </div>
-            <p className="mt-1 text-sm font-semibold text-text-primary">{data.planMasPopular}</p>
+            <p className="text-base font-bold text-text-primary mt-1">{data.planMasPopular}</p>
             {plans[0] && (
               <p className="text-xs text-text-muted mt-0.5">
                 {formatNumber(plans[0].clientCount)} clientes &middot; {formatCOP(plans[0].recaudo)}/mes
@@ -81,48 +88,48 @@ export function PlansDrawer({ isOpen, onClose }: PlansDrawerProps) {
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           {isLoading && (
-            <div className="p-5 space-y-3">
+            <div className="p-6 space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-10 rounded-lg bg-white/5 animate-pulse" />
+                <div key={i} className="h-12 rounded-xl bg-white/[0.04] animate-pulse" />
               ))}
             </div>
           )}
 
           {isError && (
-            <div className="p-5">
-              <p className="text-sm text-error">Error al cargar planes</p>
-              <p className="mt-1 text-xs text-text-muted">
+            <div className="m-6 rounded-xl border border-error/20 bg-error/5 p-4">
+              <p className="text-sm font-semibold text-error">Error al cargar planes</p>
+              <p className="text-xs text-text-muted mt-1">
                 {error?.message ?? 'No se pudo obtener la lista de planes'}
               </p>
             </div>
           )}
 
           {!isLoading && !isError && plans.length === 0 && (
-            <div className="p-5">
+            <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
               <p className="text-sm text-text-muted">No hay planes disponibles.</p>
             </div>
           )}
 
           {!isLoading && !isError && plans.length > 0 && (
             <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-surface border-b border-border">
+              <thead className="sticky top-0 bg-surface/95 backdrop-blur-sm border-b border-border">
                 <tr>
-                  <th className="px-5 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">Plan</th>
-                  <th className="px-3 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Clientes</th>
-                  <th className="px-3 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Recaudo/mes</th>
-                  <th className="px-5 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">Precio prom.</th>
+                  <th className="px-6 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-text-muted">Plan</th>
+                  <th className="px-3 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-text-muted">Clientes</th>
+                  <th className="px-3 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-text-muted">Recaudo/mes</th>
+                  <th className="px-6 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-text-muted">Precio prom.</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-border/60">
                 {plans.map((plan, idx) => (
                   <tr
                     key={plan.nombre}
                     className={cn(
-                      'hover:bg-white/5 transition-colors',
+                      'hover:bg-white/[0.03] transition-colors duration-150',
                       idx === 0 && 'bg-brand/5'
                     )}
                   >
-                    <td className="px-5 py-3 text-text-primary font-medium">
+                    <td className="px-6 py-3.5 text-sm text-text-primary font-medium">
                       <div className="flex items-center gap-1.5">
                         {idx === 0 && <Star className="h-3 w-3 text-brand flex-shrink-0" />}
                         <span className={idx === 0 ? 'truncate max-w-[160px]' : 'truncate max-w-[180px]'}>
@@ -130,13 +137,13 @@ export function PlansDrawer({ isOpen, onClose }: PlansDrawerProps) {
                         </span>
                       </div>
                     </td>
-                    <td className="px-3 py-3 text-right text-text-secondary tabular-nums">
+                    <td className="px-3 py-3.5 text-right text-sm text-text-secondary tabular-nums font-medium">
                       {formatNumber(plan.clientCount)}
                     </td>
-                    <td className="px-3 py-3 text-right text-text-secondary tabular-nums">
+                    <td className="px-3 py-3.5 text-right text-sm text-text-secondary tabular-nums font-medium">
                       {formatCOP(plan.recaudo)}
                     </td>
-                    <td className="px-5 py-3 text-right text-text-muted tabular-nums">
+                    <td className="px-6 py-3.5 text-right text-sm text-text-muted tabular-nums font-medium">
                       {formatCOP(plan.avgPrecio)}
                     </td>
                   </tr>
@@ -148,20 +155,20 @@ export function PlansDrawer({ isOpen, onClose }: PlansDrawerProps) {
 
         {/* Footer — totales */}
         {!isLoading && !isError && data && data.totalRecaudo > 0 && (
-          <div className="flex-shrink-0 border-t border-border px-5 py-4 space-y-1">
+          <div className="flex-shrink-0 border-t border-border bg-page/40 px-6 py-4 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-text-muted uppercase tracking-wider font-medium">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 Total clientes activos
               </span>
-              <span className="text-sm font-semibold text-text-primary tabular-nums">
+              <span className="text-sm font-bold text-text-primary tabular-nums">
                 {formatNumber(data.totalClientes)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-text-muted uppercase tracking-wider font-medium">
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 Recaudo potencial mensual
               </span>
-              <span className="text-sm font-semibold text-brand tabular-nums">
+              <span className="text-sm font-bold text-brand tabular-nums">
                 {formatCOP(data.totalRecaudo)}
               </span>
             </div>

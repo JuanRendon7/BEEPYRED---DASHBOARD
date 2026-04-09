@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2, Layers } from 'lucide-react'
+import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2, Layers, MapPin, AlertTriangle, Clock } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
@@ -8,6 +8,12 @@ import { InvoicesDrawer } from './InvoicesDrawer'
 import { InstalledClientsDrawer } from './InstalledClientsDrawer'
 import { GrowthDrawer } from './GrowthDrawer'
 import { PlansDrawer } from './PlansDrawer'
+import { ZonesDrawer } from './ZonesDrawer'
+import { MoraDrawer } from './MoraDrawer'
+import { AntiguedadDrawer } from './AntiguedadDrawer'
+import { useZones } from '@/hooks/useZones'
+import { useMora } from '@/hooks/useMora'
+import { useAntiguedad } from '@/hooks/useAntiguedad'
 import type { MetricsData } from '@/types/api'
 
 function formatCOP(amount: number): string {
@@ -29,15 +35,25 @@ interface MetricsGridProps {
 
 export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const { data, isLoading, isError, error } = useMetrics()
+  const { data: zonesData } = useZones()
+  const { data: moraData } = useMora()
+  const { data: antiguedadData } = useAntiguedad()
   const [drawerEstado, setDrawerEstado] = useState<'Activo' | 'Suspendido' | null>(null)
   const [invoicesDrawer, setInvoicesDrawer] = useState<'revenue' | 'pending' | null>(null)
   const [installedDrawerOpen, setInstalledDrawerOpen] = useState(false)
   const [growthDrawerOpen, setGrowthDrawerOpen] = useState(false)
   const [plansDrawerOpen, setPlansDrawerOpen] = useState(false)
+  const [zonesDrawerOpen, setZonesDrawerOpen] = useState(false)
+  const [moraDrawerOpen, setMoraDrawerOpen] = useState(false)
+  const [antiguedadDrawerOpen, setAntiguedadDrawerOpen] = useState(false)
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <MetricCardSkeleton />
+        <MetricCardSkeleton />
+        <MetricCardSkeleton />
+        <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
@@ -124,6 +140,30 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
           iconClassName="text-brand"
           onClick={() => setPlansDrawerOpen(true)}
         />
+        <MetricCard
+          title="Clientes por zona"
+          value={zonesData?.zonaConMasClientes ?? '—'}
+          subtitle={zonesData ? `${zonesData.totalZonas} zonas activas` : 'Zonas activas'}
+          icon={MapPin}
+          iconClassName="text-brand"
+          onClick={() => setZonesDrawerOpen(true)}
+        />
+        <MetricCard
+          title="Clientes en mora"
+          value={moraData ? formatNumber(moraData.totalClientesEnMora) : '—'}
+          subtitle="Con facturas vencidas"
+          icon={AlertTriangle}
+          iconClassName="text-red-400"
+          onClick={() => setMoraDrawerOpen(true)}
+        />
+        <MetricCard
+          title="Antigüedad promedio"
+          value={antiguedadData?.avgLabel ?? '—'}
+          subtitle="Clientes activos"
+          icon={Clock}
+          iconClassName="text-brand"
+          onClick={() => setAntiguedadDrawerOpen(true)}
+        />
       </div>
 
       <ClientsDrawer
@@ -145,6 +185,18 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
       <PlansDrawer
         isOpen={plansDrawerOpen}
         onClose={() => setPlansDrawerOpen(false)}
+      />
+      <ZonesDrawer
+        isOpen={zonesDrawerOpen}
+        onClose={() => setZonesDrawerOpen(false)}
+      />
+      <MoraDrawer
+        isOpen={moraDrawerOpen}
+        onClose={() => setMoraDrawerOpen(false)}
+      />
+      <AntiguedadDrawer
+        isOpen={antiguedadDrawerOpen}
+        onClose={() => setAntiguedadDrawerOpen(false)}
       />
     </>
   )

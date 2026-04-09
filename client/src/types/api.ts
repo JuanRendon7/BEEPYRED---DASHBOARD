@@ -243,3 +243,38 @@ export interface AntiguedadResponse {
 }
 
 export type AntiguedadApiResponse = AntiguedadResponse | BffErrorResponse
+
+// ── Accionista individual ──
+export interface InversionAccionista {
+  key: string
+  nombre: string
+  saldoInicial: number
+  total: number
+  porcentaje: number
+}
+
+// ── Transacción de inversión ──
+export interface InversionTransaccion {
+  fecha: string
+  nelson?: number
+  arley?: number
+  jaime?: number
+  juanCamilo?: number
+  observacion: string
+}
+
+// ── Respuesta GET /api/inversion ──
+export interface InversionData {
+  accionistas: InversionAccionista[]
+  transacciones: InversionTransaccion[]
+  totalGeneral: number
+  fetchedAt: string
+}
+
+export interface InversionResponse {
+  success: true
+  data: InversionData
+  cached?: boolean
+}
+
+export type InversionApiResponse = InversionResponse | BffErrorResponse

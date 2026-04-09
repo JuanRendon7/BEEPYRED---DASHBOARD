@@ -5,6 +5,14 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { METRICS_QUERY_KEY } from '@/hooks/useMetrics'
 import { INVOICES_QUERY_KEY } from '@/hooks/useInvoices'
+import { ZONES_QUERY_KEY } from '@/hooks/useZones'
+import { MORA_QUERY_KEY } from '@/hooks/useMora'
+import { ANTIGUEDAD_QUERY_KEY } from '@/hooks/useAntiguedad'
+import { GROWTH_QUERY_KEY } from '@/hooks/useGrowth'
+import { PLANS_QUERY_KEY } from '@/hooks/usePlans'
+import { INVERSION_QUERY_KEY } from '@/hooks/useInversion'
+import { CLIENTS_QUERY_KEY } from '@/hooks/useClients'
+import { INSTALLED_CLIENTS_QUERY_KEY } from '@/hooks/useInstalledClients'
 
 const COOLDOWN_MS = 30_000  // 30 segundos — rate limit protection
 
@@ -24,6 +32,14 @@ export function RefreshButton() {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: METRICS_QUERY_KEY }),
       queryClient.invalidateQueries({ queryKey: INVOICES_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: ZONES_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: MORA_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: ANTIGUEDAD_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: GROWTH_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: PLANS_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: INVERSION_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: CLIENTS_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: INSTALLED_CLIENTS_QUERY_KEY }),
     ])
 
     setTimeout(() => {

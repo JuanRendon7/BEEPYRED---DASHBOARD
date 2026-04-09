@@ -10,6 +10,7 @@ import { plansRouter } from './routes/plans'
 import { zonesRouter } from './routes/zones'
 import { moraRouter } from './routes/mora'
 import { antiguedadRouter } from './routes/antiguedad'
+import { inversionRouter } from './routes/inversion'
 import { errorHandler } from './middleware/errorHandler'
 
 // Env validation — fail fast if required vars are missing (per D-16, Claude's Discretion)
@@ -50,6 +51,7 @@ app.use(plansRouter)
 app.use(zonesRouter)
 app.use(moraRouter)
 app.use(antiguedadRouter)
+app.use(inversionRouter)
 
 // 404 handler for unregistered routes — must be after BFF routes, before errorHandler
 app.use((_req, res) => {

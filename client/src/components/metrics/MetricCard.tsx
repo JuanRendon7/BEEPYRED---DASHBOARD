@@ -8,6 +8,7 @@ interface MetricCardProps {
   icon: LucideIcon
   iconClassName?: string
   className?: string
+  isLoading?: boolean
   onClick?: () => void
 }
 
@@ -18,6 +19,7 @@ export function MetricCard({
   icon: Icon,
   iconClassName,
   className,
+  isLoading = false,
   onClick,
 }: MetricCardProps) {
   const isClickable = onClick !== undefined
@@ -65,9 +67,13 @@ export function MetricCard({
       </div>
 
       {/* Value */}
-      <p className="mt-4 text-2xl font-bold leading-none tracking-tight text-text-primary tabular-nums transition-colors duration-200 group-hover:text-white">
-        {value}
-      </p>
+      {isLoading ? (
+        <div className="mt-4 h-8 w-32 rounded-lg bg-white/[0.06] animate-pulse" />
+      ) : (
+        <p className="mt-4 text-2xl font-bold leading-none tracking-tight text-text-primary tabular-nums transition-colors duration-200 group-hover:text-white">
+          {value}
+        </p>
+      )}
 
       {/* Subtitle */}
       {subtitle && (

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2, Layers, MapPin, AlertTriangle, Clock } from 'lucide-react'
+import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2, Layers, MapPin, AlertTriangle, Clock, Briefcase } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
@@ -11,9 +11,11 @@ import { PlansDrawer } from './PlansDrawer'
 import { ZonesDrawer } from './ZonesDrawer'
 import { MoraDrawer } from './MoraDrawer'
 import { AntiguedadDrawer } from './AntiguedadDrawer'
+import { InversionDrawer } from './InversionDrawer'
 import { useZones } from '@/hooks/useZones'
 import { useMora } from '@/hooks/useMora'
 import { useAntiguedad } from '@/hooks/useAntiguedad'
+import { useInversion } from '@/hooks/useInversion'
 import type { MetricsData } from '@/types/api'
 
 function formatCOP(amount: number): string {
@@ -35,9 +37,10 @@ interface MetricsGridProps {
 
 export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const { data, isLoading, isError, error } = useMetrics()
-  const { data: zonesData } = useZones()
-  const { data: moraData } = useMora()
-  const { data: antiguedadData } = useAntiguedad()
+  const { data: zonesData, isLoading: zonesLoading } = useZones()
+  const { data: moraData, isLoading: moraLoading } = useMora()
+  const { data: antiguedadData, isLoading: antiguedadLoading } = useAntiguedad()
+  const { data: inversionData, isLoading: inversionLoading } = useInversion()
   const [drawerEstado, setDrawerEstado] = useState<'Activo' | 'Suspendido' | null>(null)
   const [invoicesDrawer, setInvoicesDrawer] = useState<'revenue' | 'pending' | null>(null)
   const [installedDrawerOpen, setInstalledDrawerOpen] = useState(false)
@@ -46,10 +49,14 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const [zonesDrawerOpen, setZonesDrawerOpen] = useState(false)
   const [moraDrawerOpen, setMoraDrawerOpen] = useState(false)
   const [antiguedadDrawerOpen, setAntiguedadDrawerOpen] = useState(false)
+  const [inversionDrawerOpen, setInversionDrawerOpen] = useState(false)
 
-  if (isLoading) {
+  const anyLoading = isLoading || zonesLoading || moraLoading || antiguedadLoading || inversionLoading
+
+  if (anyLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
@@ -164,6 +171,14 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
           iconClassName="text-brand"
           onClick={() => setAntiguedadDrawerOpen(true)}
         />
+        <MetricCard
+          title="Inversión accionistas"
+          value={inversionData ? formatCOP(inversionData.totalGeneral) : '—'}
+          subtitle={inversionData ? `${inversionData.accionistas.length} accionistas · inversión acumulada` : 'Inversión acumulada'}
+          icon={Briefcase}
+          iconClassName="text-brand"
+          onClick={() => setInversionDrawerOpen(true)}
+        />
       </div>
 
       <ClientsDrawer
@@ -197,6 +212,10 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
       <AntiguedadDrawer
         isOpen={antiguedadDrawerOpen}
         onClose={() => setAntiguedadDrawerOpen(false)}
+      />
+      <InversionDrawer
+        isOpen={inversionDrawerOpen}
+        onClose={() => setInversionDrawerOpen(false)}
       />
     </>
   )

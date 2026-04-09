@@ -1,4 +1,4 @@
-import { X, Briefcase } from 'lucide-react'
+import { X, Briefcase, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useInversion } from '@/hooks/useInversion'
 import { ExportButtons } from '@/components/ui/ExportButtons'
@@ -13,13 +13,23 @@ function formatCOP(amount: number): string {
   }).format(amount)
 }
 
+function timeAgo(isoString: string): string {
+  const diffMs = Date.now() - new Date(isoString).getTime()
+  const diffMin = Math.floor(diffMs / 60_000)
+  if (diffMin < 1) return 'ahora mismo'
+  if (diffMin === 1) return 'hace 1 min'
+  if (diffMin < 60) return `hace ${diffMin} min`
+  const diffH = Math.floor(diffMin / 60)
+  return diffH === 1 ? 'hace 1 hora' : `hace ${diffH} horas`
+}
+
 interface InversionDrawerProps {
   isOpen: boolean
   onClose: () => void
 }
 
 export function InversionDrawer({ isOpen, onClose }: InversionDrawerProps) {
-  const { data, isLoading, isError, error } = useInversion()
+  const { data, isLoading, isError, error, isFetching, refetch } = useInversion()
 
   return (
     <>
@@ -60,24 +70,56 @@ export function InversionDrawer({ isOpen, onClose }: InversionDrawerProps) {
               onExcel={() => {
                 if (!data) return
                 exportToExcel(
-                  data.transacciones.map(tx => ({ Fecha: tx.fecha, Concepto: tx.observacion, Nelson: tx.nelson ?? '', Arley: tx.arley ?? '', Jaime: tx.jaime ?? '', 'Juan Camilo': tx.juanCamilo ?? '' })),
-                  'inversion_accionistas', 'Movimientos'
+                  data.transacciones.map(tx => ({
+                    Fecha: tx.fecha,
+                    Concepto: tx.observacion,
+                    Nelson: tx.nelson ?? '',
+                    Arley: tx.arley ?? '',
+                    Jaime: tx.jaime ?? '',
+                    'Juan Camilo': tx.juanCamilo ?? '',
+                  })),
+                  'inversion_accionistas',
+                  'Movimientos'
                 )
               }}
               onPDF={() => {
                 if (!data) return
-                exportToPDF('Inversión accionistas', [
-                  { header: 'Fecha', dataKey: 'Fecha' },
-                  { header: 'Concepto', dataKey: 'Concepto' },
-                  { header: 'Nelson', dataKey: 'Nelson' },
-                  { header: 'Arley', dataKey: 'Arley' },
-                  { header: 'Jaime', dataKey: 'Jaime' },
-                  { header: 'J. Camilo', dataKey: 'JC' },
-                ], data.transacciones.map(tx => ({ Fecha: tx.fecha, Concepto: tx.observacion, Nelson: tx.nelson ? `$${tx.nelson.toLocaleString('es-CO')}` : '—', Arley: tx.arley ? `$${tx.arley.toLocaleString('es-CO')}` : '—', Jaime: tx.jaime ? `$${tx.jaime.toLocaleString('es-CO')}` : '—', JC: tx.juanCamilo ? `$${tx.juanCamilo.toLocaleString('es-CO')}` : '—' })),
-                'inversion_accionistas', 'landscape')
+                exportToPDF(
+                  'Inversión accionistas',
+                  [
+                    { header: 'Fecha', dataKey: 'Fecha' },
+                    { header: 'Concepto', dataKey: 'Concepto' },
+                    { header: 'Nelson', dataKey: 'Nelson' },
+                    { header: 'Arley', dataKey: 'Arley' },
+                    { header: 'Jaime', dataKey: 'Jaime' },
+                    { header: 'J. Camilo', dataKey: 'JC' },
+                  ],
+                  data.transacciones.map(tx => ({
+                    Fecha: tx.fecha,
+                    Concepto: tx.observacion,
+                    Nelson: tx.nelson ? formatCOP(tx.nelson) : '—',
+                    Arley: tx.arley ? formatCOP(tx.arley) : '—',
+                    Jaime: tx.jaime ? formatCOP(tx.jaime) : '—',
+                    JC: tx.juanCamilo ? formatCOP(tx.juanCamilo) : '—',
+                  })),
+                  'inversion_accionistas',
+                  'landscape'
+                )
               }}
             />
-            <button onClick={onClose} className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200" aria-label="Cerrar panel">
+            <button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              title="Actualizar desde Google Sheets"
+              className="rounded-xl p-2 text-text-muted hover:text-brand hover:bg-brand/10 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <RefreshCw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
+            </button>
+            <button
+              onClick={onClose}
+              className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
+              aria-label="Cerrar panel"
+            >
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -91,9 +133,7 @@ export function InversionDrawer({ isOpen, onClose }: InversionDrawerProps) {
                 <div key={a.key} className="rounded-xl bg-white/[0.04] border border-border/60 px-4 py-3">
                   <p className="text-[11px] text-text-muted font-medium mb-1">{a.nombre}</p>
                   <p className="text-sm font-bold text-text-primary tabular-nums">{formatCOP(a.total)}</p>
-                  <p className="text-[10px] text-text-muted mt-0.5">
-                    {a.porcentaje.toFixed(1)}% del total
-                  </p>
+                  <p className="text-[10px] text-text-muted mt-0.5">{a.porcentaje.toFixed(1)}% del total</p>
                 </div>
               ))}
             </div>
@@ -204,9 +244,14 @@ export function InversionDrawer({ isOpen, onClose }: InversionDrawerProps) {
               <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 Total inversión accionistas
               </span>
-              <span className="text-sm font-bold text-brand tabular-nums">
-                {formatCOP(data.totalGeneral)}
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] text-text-muted/60 tabular-nums">
+                  Actualizado {timeAgo(data.fetchedAt)}
+                </span>
+                <span className="text-sm font-bold text-brand tabular-nums">
+                  {formatCOP(data.totalGeneral)}
+                </span>
+              </div>
             </div>
           </div>
         )}

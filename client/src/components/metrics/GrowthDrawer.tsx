@@ -1,6 +1,7 @@
-import { X } from 'lucide-react'
+import { X, Download, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useGrowth } from '@/hooks/useGrowth'
+import { exportToExcelMultiSheet, exportToPDFMultiSection } from '@/lib/export'
 import {
   ComposedChart,
   Bar,
@@ -54,6 +55,69 @@ const AXIS_TICK = { fill: '#71717A', fontSize: 11 }
 export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
   const { data, isLoading, isError, error } = useGrowth()
 
+  const hasData = !isLoading && !isError && !!data
+
+  function handleExportExcel() {
+    if (!data) return
+    exportToExcelMultiSheet(
+      [
+        {
+          name: 'Clientes',
+          rows: data.clientGrowth.map(r => ({
+            'Mes': formatMonthLabel(r.month),
+            'Nuevos clientes': r.newClients,
+            'Acumulado': r.totalClients,
+          })),
+        },
+        {
+          name: 'Ingresos',
+          rows: data.revenueHistory.map(r => ({
+            'Mes': formatMonthLabel(r.month),
+            'Ingresos': r.revenue,
+            'Acumulado': r.totalRevenue,
+          })),
+        },
+      ],
+      'crecimiento-beepyred'
+    )
+  }
+
+  function handleExportPDF() {
+    if (!data) return
+    exportToPDFMultiSection(
+      'Crecimiento BEEPYRED',
+      [
+        {
+          subtitle: 'Evolución de clientes',
+          columns: [
+            { header: 'Mes', dataKey: 'Mes' },
+            { header: 'Nuevos', dataKey: 'Nuevos clientes' },
+            { header: 'Acumulado', dataKey: 'Acumulado' },
+          ],
+          rows: data.clientGrowth.map(r => ({
+            'Mes': formatMonthLabel(r.month),
+            'Nuevos clientes': r.newClients,
+            'Acumulado': r.totalClients,
+          })),
+        },
+        {
+          subtitle: 'Ingresos mensuales',
+          columns: [
+            { header: 'Mes', dataKey: 'Mes' },
+            { header: 'Ingresos', dataKey: 'Ingresos' },
+            { header: 'Acumulado', dataKey: 'Acumulado' },
+          ],
+          rows: data.revenueHistory.map(r => ({
+            'Mes': formatMonthLabel(r.month),
+            'Ingresos': formatCOP(r.revenue),
+            'Acumulado': formatCOP(r.totalRevenue),
+          })),
+        },
+      ],
+      'crecimiento-beepyred'
+    )
+  }
+
   return (
     <>
       <div
@@ -85,6 +149,28 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
             aria-label="Cerrar panel"
           >
             <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Export row */}
+        <div className="px-6 py-3 border-b border-border flex-shrink-0 flex items-center gap-3">
+          <div className="flex-1" />
+          <button
+            onClick={handleExportPDF}
+            disabled={!hasData}
+            title="Exportar PDF"
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-text-muted hover:text-red-400 hover:bg-red-400/10 border border-border transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            PDF
+          </button>
+          <button
+            onClick={handleExportExcel}
+            disabled={!hasData}
+            className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold bg-brand text-black hover:bg-brand-hover transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Descargar base de datos
           </button>
         </div>
 

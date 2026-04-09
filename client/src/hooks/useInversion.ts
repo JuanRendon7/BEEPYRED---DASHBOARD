@@ -10,6 +10,7 @@ export function useInversion() {
     queryFn: fetchInversion,
     staleTime: 0,
     refetchOnWindowFocus: false,
+    refetchInterval: 5 * 60 * 1000,  // auto-refresh cada 5 min
     retry: 1,
   })
 }

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { X, Search, Download } from 'lucide-react'
-import * as XLSX from 'xlsx'
+import { X, Search, Download, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useClients } from '@/hooks/useClients'
+import { exportToExcel, exportToPDF } from '@/lib/export'
 import type { BffClient } from '@/types/api'
 
 interface ClientsDrawerProps {
@@ -29,24 +29,46 @@ function formatCOP(amount: number): string {
   }).format(amount)
 }
 
-function exportToExcel(clients: BffClient[], estado: string) {
-  const date = new Date().toISOString().split('T')[0]
-  const rows = clients.map(c => ({
+const PDF_COLUMNS = [
+  { header: 'ID', dataKey: 'ID Servicio' },
+  { header: 'Nombre', dataKey: 'Nombre' },
+  { header: 'Plan', dataKey: 'Plan' },
+  { header: 'Zona', dataKey: 'Zona' },
+  { header: 'Precio/mes', dataKey: 'Precio Plan' },
+  { header: 'Deuda', dataKey: 'Deuda' },
+  { header: 'Est. Facturas', dataKey: 'Estado Facturas' },
+  { header: 'F. Instalación', dataKey: 'Fecha Instalación' },
+]
+
+function buildRows(clients: BffClient[]) {
+  return clients.map(c => ({
     'ID Servicio': c.id_servicio,
     'Nombre': c.nombre,
     'Estado': c.estado,
     'Plan': c.plan ?? '—',
-    'Precio Plan': c.precio_plan,
+    'Precio Plan': c.precio_plan > 0
+      ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(c.precio_plan)
+      : '—',
     'Zona': c.zona ?? '—',
-    'Deuda': c.saldo,
+    'Deuda': new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(c.saldo),
     'Fecha Instalación': c.fecha_instalacion ?? '—',
     'Estado Facturas': c.estado_facturas ?? '—',
     'Router': c.router ?? '—',
   }))
-  const ws = XLSX.utils.json_to_sheet(rows)
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Clientes')
-  XLSX.writeFile(wb, `clientes-beepyred-${estado.toLowerCase()}-${date}.xlsx`)
+}
+
+function handleExportExcel(clients: BffClient[], estado: string) {
+  exportToExcel(buildRows(clients), `clientes-beepyred-${estado.toLowerCase()}`, 'Clientes')
+}
+
+function handleExportPDF(clients: BffClient[], estado: string, titleBase: string) {
+  exportToPDF(
+    `${titleBase} — ${clients.length} registros`,
+    PDF_COLUMNS,
+    buildRows(clients),
+    `clientes-beepyred-${estado.toLowerCase()}`,
+    'landscape'
+  )
 }
 
 export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
@@ -127,7 +149,16 @@ export function ClientsDrawer({ estado, onClose }: ClientsDrawerProps) {
             />
           </div>
           <button
-            onClick={() => exportToExcel(filteredClients, estado ?? 'activos')}
+            onClick={() => handleExportPDF(filteredClients, estado ?? 'activos', titleBase)}
+            disabled={filteredClients.length === 0}
+            title="Exportar PDF"
+            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-text-muted hover:text-red-400 hover:bg-red-400/10 border border-border transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            PDF
+          </button>
+          <button
+            onClick={() => handleExportExcel(filteredClients, estado ?? 'activos')}
             disabled={filteredClients.length === 0}
             className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-semibold bg-brand text-black hover:bg-brand-hover transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
           >

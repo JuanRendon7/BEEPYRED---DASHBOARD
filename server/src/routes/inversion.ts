@@ -5,38 +5,11 @@ import { cache } from '../lib/cache'
 export const inversionRouter = Router()
 
 const CACHE_KEY = 'inversion'
-const CACHE_TTL_MS = 5 * 60_000  // 5 minutos — data cambia poco
+const CACHE_TTL_MS = 5 * 60_000  // 5 minutos
 
-// Google Sheets public CSV export URL
-const SHEET_URL =
-  'https://docs.google.com/spreadsheets/d/1u1MVyXJEWljQRT9YvTwG08HH8ebemrhI/export?format=csv&gid=289872435'
-
-// ── CSV parser — handles quoted fields correctly ──
-function parseCSV(text: string): string[][] {
-  const rows: string[][] = []
-  const lines = text.split(/\r?\n/)
-  for (const line of lines) {
-    if (!line.trim()) continue
-    const row: string[] = []
-    let field = ''
-    let inQuote = false
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i]
-      if (ch === '"') {
-        if (inQuote && line[i + 1] === '"') { field += '"'; i++ }
-        else inQuote = !inQuote
-      } else if (ch === ',' && !inQuote) {
-        row.push(field.trim())
-        field = ''
-      } else {
-        field += ch
-      }
-    }
-    row.push(field.trim())
-    rows.push(row)
-  }
-  return rows
-}
+const SHEET_ID  = '1u1MVyXJEWljQRT9YvTwG08HH8ebemrhI'
+const TAB_NAME  = process.env.GOOGLE_SHEETS_TAB_NAME ?? 'Hoja1'
+const API_KEY   = process.env.GOOGLE_SHEETS_API_KEY ?? ''
 
 // ── Parse "$61,613,697" → 61613697 ──
 function parseMoney(s: string): number | undefined {
@@ -76,89 +49,95 @@ inversionRouter.get('/api/inversion', async (_req: Request, res: Response) => {
     return res.json({ success: true, data: cached, cached: true })
   }
 
-  try {
-    const response = await axios.get<string>(SHEET_URL, {
-      responseType: 'text',
-      maxRedirects: 5,
-      timeout: 10_000,
+  if (!API_KEY) {
+    return res.status(500).json({
+      success: false,
+      error: { code: 'CONFIG_ERROR', message: 'GOOGLE_SHEETS_API_KEY no configurada en el servidor' },
     })
+  }
 
-    const rows = parseCSV(response.data)
+  try {
+    // Sheets API v4 — range: todas las filas de columnas A:F
+    const range = encodeURIComponent(`${TAB_NAME}!A:F`)
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`
+
+    const response = await axios.get<{ values: string[][] }>(url, { timeout: 10_000 })
+
+    const rows: string[][] = response.data.values ?? []
     if (rows.length < 2) {
-      throw new Error('Google Sheets CSV vacío o sin datos')
+      throw new Error('Google Sheet sin datos suficientes')
     }
 
     // Row 0 = headers: Fecha, Nelson García, Arley Valencia, Jaime Giraldo, Juan Camilo R, Observaciones
     // Row 1 = saldo inicial (sin fecha)
     // Rows 2..n-2 = transacciones
-    // Row n-1 = totales (sin fecha, sin observación)
+    // Row n-1 = totales
 
-    const initialRow = rows[1]
+    const initialRow = rows[1] ?? []
     const saldoInicial = {
-      nelson:    parseMoney(initialRow[1]) ?? 0,
-      arley:     parseMoney(initialRow[2]) ?? 0,
-      jaime:     parseMoney(initialRow[3]) ?? 0,
+      nelson:     parseMoney(initialRow[1]) ?? 0,
+      arley:      parseMoney(initialRow[2]) ?? 0,
+      jaime:      parseMoney(initialRow[3]) ?? 0,
       juanCamilo: parseMoney(initialRow[4]) ?? 0,
     }
 
-    // Last row with actual values is the totals row (last non-empty row)
-    const lastRow = rows[rows.length - 1]
+    const lastRow = rows[rows.length - 1] ?? []
     const totales = {
-      nelson:    parseMoney(lastRow[1]) ?? 0,
-      arley:     parseMoney(lastRow[2]) ?? 0,
-      jaime:     parseMoney(lastRow[3]) ?? 0,
+      nelson:     parseMoney(lastRow[1]) ?? 0,
+      arley:      parseMoney(lastRow[2]) ?? 0,
+      jaime:      parseMoney(lastRow[3]) ?? 0,
       juanCamilo: parseMoney(lastRow[4]) ?? 0,
     }
 
     const totalGeneral = totales.nelson + totales.arley + totales.jaime + totales.juanCamilo
 
     const accionistas: InversionAccionista[] = [
-      { key: 'nelson',    nombre: 'Nelson García',  saldoInicial: saldoInicial.nelson,    total: totales.nelson,    porcentaje: totalGeneral > 0 ? (totales.nelson / totalGeneral) * 100 : 0 },
-      { key: 'arley',     nombre: 'Arley Valencia', saldoInicial: saldoInicial.arley,     total: totales.arley,     porcentaje: totalGeneral > 0 ? (totales.arley / totalGeneral) * 100 : 0 },
-      { key: 'jaime',     nombre: 'Jaime Giraldo',  saldoInicial: saldoInicial.jaime,     total: totales.jaime,     porcentaje: totalGeneral > 0 ? (totales.jaime / totalGeneral) * 100 : 0 },
-      { key: 'juanCamilo', nombre: 'Juan Camilo R.', saldoInicial: saldoInicial.juanCamilo, total: totales.juanCamilo, porcentaje: totalGeneral > 0 ? (totales.juanCamilo / totalGeneral) * 100 : 0 },
+      { key: 'nelson',     nombre: 'Nelson García',   saldoInicial: saldoInicial.nelson,     total: totales.nelson,     porcentaje: totalGeneral > 0 ? (totales.nelson / totalGeneral) * 100 : 0 },
+      { key: 'arley',      nombre: 'Arley Valencia',  saldoInicial: saldoInicial.arley,      total: totales.arley,      porcentaje: totalGeneral > 0 ? (totales.arley / totalGeneral) * 100 : 0 },
+      { key: 'jaime',      nombre: 'Jaime Giraldo',   saldoInicial: saldoInicial.jaime,      total: totales.jaime,      porcentaje: totalGeneral > 0 ? (totales.jaime / totalGeneral) * 100 : 0 },
+      { key: 'juanCamilo', nombre: 'Juan Camilo R.',  saldoInicial: saldoInicial.juanCamilo, total: totales.juanCamilo, porcentaje: totalGeneral > 0 ? (totales.juanCamilo / totalGeneral) * 100 : 0 },
     ]
 
-    // Transacciones: rows 2 to length-2 (skip header, initial, and totals)
     const transacciones: InversionTransaccion[] = []
     for (let i = 2; i < rows.length - 1; i++) {
       const row = rows[i]
-      const fecha = row[0]
-      const nelson    = parseMoney(row[1])
-      const arley     = parseMoney(row[2])
-      const jaime     = parseMoney(row[3])
+      const fecha      = row[0] ?? ''
+      const nelson     = parseMoney(row[1])
+      const arley      = parseMoney(row[2])
+      const jaime      = parseMoney(row[3])
       const juanCamilo = parseMoney(row[4])
       const observacion = row[5] ?? ''
 
-      // Skip rows that are completely empty
       if (!fecha && !nelson && !arley && !jaime && !juanCamilo && !observacion) continue
 
       const tx: InversionTransaccion = { fecha, observacion }
-      if (nelson    !== undefined) tx.nelson    = nelson
-      if (arley     !== undefined) tx.arley     = arley
-      if (jaime     !== undefined) tx.jaime     = jaime
+      if (nelson     !== undefined) tx.nelson     = nelson
+      if (arley      !== undefined) tx.arley      = arley
+      if (jaime      !== undefined) tx.jaime      = jaime
       if (juanCamilo !== undefined) tx.juanCamilo = juanCamilo
       transacciones.push(tx)
     }
 
-    const data: InversionData = {
-      accionistas,
-      transacciones,
-      totalGeneral,
-      fetchedAt: new Date().toISOString(),
-    }
+    const data: InversionData = { accionistas, transacciones, totalGeneral, fetchedAt: new Date().toISOString() }
 
     cache.set(CACHE_KEY, data, CACHE_TTL_MS)
     return res.json({ success: true, data })
 
-  } catch (err) {
-    console.error('[/api/inversion] Error fetching Google Sheets:', err)
-    return res.status(502).json({
-      success: false,
-      error: {
-        code: 'UPSTREAM_ERROR',
-        message: err instanceof Error ? err.message : 'No se pudo leer el Google Sheet',
-      },
-    })
+  } catch (err: unknown) {
+    console.error('[/api/inversion] Error fetching Google Sheets API:', err)
+
+    // Mensaje de error legible — incluye detalle si es error 403/400 de Google
+    let message = err instanceof Error ? err.message : 'No se pudo leer el Google Sheet'
+    if (axios.isAxiosError(err) && err.response?.data?.error?.message) {
+      message = err.response.data.error.message
+    }
+
+    return res.status(502).json({ success: false, error: { code: 'UPSTREAM_ERROR', message } })
   }
+})
+
+// Endpoint para forzar refresh invalidando caché
+inversionRouter.post('/api/inversion/refresh', (_req: Request, res: Response) => {
+  cache.delete(CACHE_KEY)
+  res.json({ success: true, message: 'Caché invalidado — próximo GET traerá datos frescos' })
 })

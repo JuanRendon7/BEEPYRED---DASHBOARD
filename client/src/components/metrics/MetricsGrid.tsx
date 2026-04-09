@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2, Layers, MapPin, AlertTriangle, Clock, Briefcase, Percent, Scale } from 'lucide-react'
+import { Users, UserX, DollarSign, TrendingUp, UserPlus, BarChart2, Layers, MapPin, AlertTriangle, Clock, Briefcase } from 'lucide-react'
 import { useMetrics } from '@/hooks/useMetrics'
 import { MetricCard } from './MetricCard'
 import { MetricCardSkeleton } from './MetricCardSkeleton'
@@ -51,13 +51,12 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const [antiguedadDrawerOpen, setAntiguedadDrawerOpen] = useState(false)
   const [inversionDrawerOpen, setInversionDrawerOpen] = useState(false)
 
-  const anyLoading = isLoading || zonesLoading || moraLoading || antiguedadLoading || inversionLoading
+  // inversionLoading excluido — es data secundaria, no debe bloquear el dashboard principal
+  const anyLoading = isLoading || zonesLoading || moraLoading || antiguedadLoading
 
   if (anyLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <MetricCardSkeleton />
-        <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
         <MetricCardSkeleton />
@@ -89,21 +88,6 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
   const metrics = _data ?? data
 
   if (!metrics) return null
-
-  // Métricas derivadas — calculadas en cliente con data existente
-  const tasaMora = metrics.activeClients > 0 && moraData
-    ? `${((moraData.totalClientesEnMora / metrics.activeClients) * 100).toFixed(1)}%`
-    : '—'
-  const tasaMoraSubtitle = moraData
-    ? `${formatNumber(moraData.totalClientesEnMora)} de ${formatNumber(metrics.activeClients)} clientes activos`
-    : 'de clientes activos'
-
-  const ratioDeuda = metrics.monthlyRevenue > 0
-    ? `${(metrics.pendingDebt / metrics.monthlyRevenue).toFixed(1)} meses`
-    : '—'
-  const ratioDeudaSubtitle = metrics.monthlyRevenue > 0
-    ? `${formatCOP(metrics.pendingDebt)} ÷ ${formatCOP(metrics.monthlyRevenue)}/mes`
-    : 'deuda ÷ ingresos del mes'
 
   return (
     <>
@@ -195,22 +179,6 @@ export function MetricsGrid({ _data }: MetricsGridProps = {}) {
           icon={Briefcase}
           iconClassName="text-brand"
           onClick={() => setInversionDrawerOpen(true)}
-        />
-        <MetricCard
-          title="Tasa de mora"
-          value={tasaMora}
-          subtitle={tasaMoraSubtitle}
-          icon={Percent}
-          iconClassName="text-orange-400"
-          onClick={() => setMoraDrawerOpen(true)}
-        />
-        <MetricCard
-          title="Ratio deuda / ingresos"
-          value={ratioDeuda}
-          subtitle={ratioDeudaSubtitle}
-          icon={Scale}
-          iconClassName="text-amber-400"
-          onClick={() => setInvoicesDrawer('pending')}
         />
       </div>
 

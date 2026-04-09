@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { X, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useInstalledClients } from '@/hooks/useInstalledClients'
+import { ExportButtons } from '@/components/ui/ExportButtons'
+import { exportToExcel, exportToPDF } from '@/lib/export'
 
 function formatCOP(amount: number): string {
   return new Intl.NumberFormat('es-CO', {
@@ -73,13 +75,26 @@ export function InstalledClientsDrawer({ isOpen, onClose }: InstalledClientsDraw
               {baseClients.length}
             </span>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
-            aria-label="Cerrar panel"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <ExportButtons
+              disabled={baseClients.length === 0}
+              onExcel={() => exportToExcel(
+                baseClients.map(c => ({ Cliente: c.nombre, Plan: c.plan ?? '—', Zona: c.zona ?? '—', 'Valor/mes': c.precioPlan, 'Fecha alta': c.fechaAlta.split(' ')[0] })),
+                'instalados_mes_beepyred', 'Instalados'
+              )}
+              onPDF={() => exportToPDF('Instalados este mes', [
+                { header: 'Cliente', dataKey: 'Cliente' },
+                { header: 'Plan', dataKey: 'Plan' },
+                { header: 'Zona', dataKey: 'Zona' },
+                { header: 'Valor/mes', dataKey: 'Valor' },
+                { header: 'Fecha alta', dataKey: 'Fecha' },
+              ], baseClients.map(c => ({ Cliente: c.nombre, Plan: c.plan ?? '—', Zona: c.zona ?? '—', Valor: `$${c.precioPlan.toLocaleString('es-CO')}`, Fecha: c.fechaAlta.split(' ')[0] })),
+              'instalados_mes_beepyred')}
+            />
+            <button onClick={onClose} className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200" aria-label="Cerrar panel">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Search */}

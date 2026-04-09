@@ -3,6 +3,8 @@ import { X, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useInvoices } from '@/hooks/useInvoices'
 import type { BffInvoice } from '@/types/api'
+import { ExportButtons } from '@/components/ui/ExportButtons'
+import { exportToExcel, exportToPDF } from '@/lib/export'
 
 interface InvoicesDrawerProps {
   type: 'revenue' | 'pending' | null  // null = cerrado
@@ -102,13 +104,25 @@ export function InvoicesDrawer({ type, onClose }: InvoicesDrawerProps) {
               {baseInvoices.length}
             </span>
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
-            aria-label="Cerrar panel"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <ExportButtons
+              disabled={baseInvoices.length === 0}
+              onExcel={() => exportToExcel(
+                baseInvoices.map(inv => ({ Cliente: inv.cliente.nombre, Estado: inv.estado, 'Fecha venc.': inv.fecha_vencimiento, 'Fecha pago': inv.fecha_pago ?? '—', Total: inv.total_cobrado })),
+                `facturas_${type}_beepyred`, 'Facturas'
+              )}
+              onPDF={() => exportToPDF(titleBase, [
+                { header: 'Cliente', dataKey: 'Cliente' },
+                { header: 'Estado', dataKey: 'Estado' },
+                { header: 'Vencimiento', dataKey: 'Venc' },
+                { header: 'Total', dataKey: 'Total' },
+              ], baseInvoices.map(inv => ({ Cliente: inv.cliente.nombre, Estado: inv.estado, Venc: inv.fecha_vencimiento, Total: `$${inv.total_cobrado.toLocaleString('es-CO')}` })),
+              `facturas_${type}_beepyred`)}
+            />
+            <button onClick={onClose} className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200" aria-label="Cerrar panel">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Search */}

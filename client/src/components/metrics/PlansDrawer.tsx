@@ -1,6 +1,8 @@
 import { X, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { usePlans } from '@/hooks/usePlans'
+import { ExportButtons } from '@/components/ui/ExportButtons'
+import { exportToExcel, exportToPDF } from '@/lib/export'
 
 function formatCOP(amount: number): string {
   return new Intl.NumberFormat('es-CO', {
@@ -58,13 +60,25 @@ export function PlansDrawer({ isOpen, onClose }: PlansDrawerProps) {
               </span>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
-            aria-label="Cerrar panel"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <ExportButtons
+              disabled={!data || plans.length === 0}
+              onExcel={() => exportToExcel(
+                plans.map(p => ({ Plan: p.nombre, Clientes: p.clientCount, 'Recaudo/mes': p.recaudo, 'Precio promedio': p.avgPrecio })),
+                'planes_beepyred', 'Planes'
+              )}
+              onPDF={() => exportToPDF('Distribución de planes', [
+                { header: 'Plan', dataKey: 'Plan' },
+                { header: 'Clientes', dataKey: 'Clientes' },
+                { header: 'Recaudo/mes', dataKey: 'Recaudo/mes' },
+                { header: 'Precio prom.', dataKey: 'Precio promedio' },
+              ], plans.map(p => ({ Plan: p.nombre, Clientes: p.clientCount, 'Recaudo/mes': `$${p.recaudo.toLocaleString('es-CO')}`, 'Precio promedio': `$${p.avgPrecio.toLocaleString('es-CO')}` })),
+              'planes_beepyred')}
+            />
+            <button onClick={onClose} className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200" aria-label="Cerrar panel">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Plan más popular — featured banner */}

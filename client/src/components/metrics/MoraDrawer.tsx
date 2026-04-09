@@ -1,6 +1,8 @@
 import { X, AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useMora } from '@/hooks/useMora'
+import { ExportButtons } from '@/components/ui/ExportButtons'
+import { exportToExcel, exportToPDF } from '@/lib/export'
 
 function formatCOP(amount: number): string {
   return new Intl.NumberFormat('es-CO', {
@@ -70,13 +72,25 @@ export function MoraDrawer({ isOpen, onClose }: MoraDrawerProps) {
               </span>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
-            aria-label="Cerrar panel"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <ExportButtons
+              disabled={!data || clientes.length === 0}
+              onExcel={() => exportToExcel(
+                clientes.map(c => ({ Cliente: c.nombre, 'Días atraso': c.diasMaxAtraso, Facturas: c.facturaCount, 'Monto mora': c.totalMora })),
+                'mora_beepyred', 'Mora'
+              )}
+              onPDF={() => exportToPDF('Clientes en mora', [
+                { header: 'Cliente', dataKey: 'Cliente' },
+                { header: 'Días atraso', dataKey: 'Días' },
+                { header: 'Facturas', dataKey: 'Facturas' },
+                { header: 'Monto mora', dataKey: 'Monto' },
+              ], clientes.map(c => ({ Cliente: c.nombre, Días: `${c.diasMaxAtraso}d`, Facturas: c.facturaCount, Monto: `$${c.totalMora.toLocaleString('es-CO')}` })),
+              'mora_beepyred')}
+            />
+            <button onClick={onClose} className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200" aria-label="Cerrar panel">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Leyenda de colores */}

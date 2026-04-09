@@ -1,6 +1,8 @@
 import { X, Briefcase } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useInversion } from '@/hooks/useInversion'
+import { ExportButtons } from '@/components/ui/ExportButtons'
+import { exportToExcel, exportToPDF } from '@/lib/export'
 
 function formatCOP(amount: number): string {
   return new Intl.NumberFormat('es-CO', {
@@ -52,13 +54,33 @@ export function InversionDrawer({ isOpen, onClose }: InversionDrawerProps) {
               </span>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
-            aria-label="Cerrar panel"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <ExportButtons
+              disabled={!data}
+              onExcel={() => {
+                if (!data) return
+                exportToExcel(
+                  data.transacciones.map(tx => ({ Fecha: tx.fecha, Concepto: tx.observacion, Nelson: tx.nelson ?? '', Arley: tx.arley ?? '', Jaime: tx.jaime ?? '', 'Juan Camilo': tx.juanCamilo ?? '' })),
+                  'inversion_accionistas', 'Movimientos'
+                )
+              }}
+              onPDF={() => {
+                if (!data) return
+                exportToPDF('Inversión accionistas', [
+                  { header: 'Fecha', dataKey: 'Fecha' },
+                  { header: 'Concepto', dataKey: 'Concepto' },
+                  { header: 'Nelson', dataKey: 'Nelson' },
+                  { header: 'Arley', dataKey: 'Arley' },
+                  { header: 'Jaime', dataKey: 'Jaime' },
+                  { header: 'J. Camilo', dataKey: 'JC' },
+                ], data.transacciones.map(tx => ({ Fecha: tx.fecha, Concepto: tx.observacion, Nelson: tx.nelson ? `$${tx.nelson.toLocaleString('es-CO')}` : '—', Arley: tx.arley ? `$${tx.arley.toLocaleString('es-CO')}` : '—', Jaime: tx.jaime ? `$${tx.jaime.toLocaleString('es-CO')}` : '—', JC: tx.juanCamilo ? `$${tx.juanCamilo.toLocaleString('es-CO')}` : '—' })),
+                'inversion_accionistas', 'landscape')
+              }}
+            />
+            <button onClick={onClose} className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200" aria-label="Cerrar panel">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Resumen por accionista */}

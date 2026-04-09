@@ -1,6 +1,8 @@
 import { X, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useZones } from '@/hooks/useZones'
+import { ExportButtons } from '@/components/ui/ExportButtons'
+import { exportToExcel, exportToPDF } from '@/lib/export'
 
 function formatCOP(amount: number): string {
   return new Intl.NumberFormat('es-CO', {
@@ -58,13 +60,25 @@ export function ZonesDrawer({ isOpen, onClose }: ZonesDrawerProps) {
               </span>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
-            aria-label="Cerrar panel"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <ExportButtons
+              disabled={!data || zones.length === 0}
+              onExcel={() => exportToExcel(
+                zones.map(z => ({ Zona: z.nombre, Clientes: z.clientCount, 'Recaudo/mes': z.recaudo, 'Precio promedio': z.avgPrecio })),
+                'zonas_beepyred', 'Zonas'
+              )}
+              onPDF={() => exportToPDF('Clientes por zona', [
+                { header: 'Zona', dataKey: 'Zona' },
+                { header: 'Clientes', dataKey: 'Clientes' },
+                { header: 'Recaudo/mes', dataKey: 'Recaudo' },
+                { header: 'Precio prom.', dataKey: 'Precio' },
+              ], zones.map(z => ({ Zona: z.nombre, Clientes: z.clientCount, Recaudo: `$${z.recaudo.toLocaleString('es-CO')}`, Precio: `$${z.avgPrecio.toLocaleString('es-CO')}` })),
+              'zonas_beepyred')}
+            />
+            <button onClick={onClose} className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200" aria-label="Cerrar panel">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Zona con más clientes — featured banner */}

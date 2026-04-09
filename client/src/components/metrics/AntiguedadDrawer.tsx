@@ -17,16 +17,17 @@ interface BucketRowProps {
 function BucketRow({ label, count, total, colorClass }: BucketRowProps) {
   const pct = total > 0 ? Math.round((count / total) * 100) : 0
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-xs">
-        <span className="text-text-secondary font-medium">{label}</span>
-        <span className="text-text-muted tabular-nums">
-          {formatNumber(count)} clientes &middot; {pct}%
+    <div className="space-y-1">
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-medium text-text-secondary">{label}</span>
+        <span className="text-sm font-bold text-text-primary tabular-nums">
+          {formatNumber(count)}
+          <span className="text-xs text-text-muted ml-2">{pct}%</span>
         </span>
       </div>
-      <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-white/5">
         <div
-          className={cn('h-full rounded-full transition-all duration-500', colorClass)}
+          className={cn('h-1.5 rounded-full bg-brand transition-all duration-700 ease-out', colorClass)}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -55,7 +56,7 @@ export function AntiguedadDrawer({ isOpen, onClose }: AntiguedadDrawerProps) {
     <>
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/50 transition-opacity duration-300',
+          'fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300',
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
         onClick={onClose}
@@ -63,7 +64,7 @@ export function AntiguedadDrawer({ isOpen, onClose }: AntiguedadDrawerProps) {
       />
       <div
         className={cn(
-          'fixed top-0 right-0 z-40 h-full w-[600px] max-w-[95vw]',
+          'fixed top-0 right-0 z-40 h-full w-[520px] max-w-[95vw]',
           'bg-surface border-l border-border',
           'flex flex-col',
           'transform transition-transform duration-300 ease-in-out',
@@ -74,27 +75,27 @@ export function AntiguedadDrawer({ isOpen, onClose }: AntiguedadDrawerProps) {
         aria-label={title}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
-          <h2 className="text-sm font-semibold text-text-primary">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border flex-shrink-0">
+          <h2 className="text-sm font-semibold text-text-primary tracking-tight">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-text-muted hover:text-text-primary hover:bg-white/10 transition-colors"
+            className="rounded-xl p-2 text-text-muted hover:text-text-primary hover:bg-white/8 transition-colors duration-200"
             aria-label="Cerrar panel"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Promedio destacado */}
+        {/* Promedio destacado — featured banner */}
         {!isLoading && !isError && data && (
-          <div className="flex-shrink-0 px-5 py-3 border-b border-border bg-brand/5">
+          <div className="flex-shrink-0 px-6 py-4 border-b border-border bg-gradient-to-r from-brand/5 to-transparent">
             <div className="flex items-center gap-2">
-              <Clock className="h-3.5 w-3.5 text-brand flex-shrink-0" />
-              <span className="text-xs text-text-muted uppercase tracking-wider font-medium">
+              <Clock className="h-4 w-4 text-brand flex-shrink-0" />
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
                 Antigüedad promedio
               </span>
             </div>
-            <p className="mt-1 text-sm font-semibold text-text-primary">{data.avgLabel}</p>
+            <p className="text-base font-bold text-text-primary mt-1">{data.avgLabel}</p>
             <p className="text-xs text-text-muted mt-0.5">
               Sobre {formatNumber(data.totalClientes)} clientes activos
             </p>
@@ -104,33 +105,30 @@ export function AntiguedadDrawer({ isOpen, onClose }: AntiguedadDrawerProps) {
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           {isLoading && (
-            <div className="p-5 space-y-4">
+            <div className="p-6 space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="h-4 w-40 rounded bg-white/5 animate-pulse" />
-                  <div className="h-2 rounded-full bg-white/5 animate-pulse" />
-                </div>
+                <div key={i} className="h-12 rounded-xl bg-white/[0.04] animate-pulse" />
               ))}
             </div>
           )}
 
           {isError && (
-            <div className="p-5">
-              <p className="text-sm text-error">Error al cargar antigüedad</p>
-              <p className="mt-1 text-xs text-text-muted">
+            <div className="m-6 rounded-xl border border-error/20 bg-error/5 p-4">
+              <p className="text-sm font-semibold text-error">Error al cargar antigüedad</p>
+              <p className="text-xs text-text-muted mt-1">
                 {error?.message ?? 'No se pudo obtener los datos de antigüedad'}
               </p>
             </div>
           )}
 
           {!isLoading && !isError && data && data.totalClientes === 0 && (
-            <div className="p-5">
+            <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
               <p className="text-sm text-text-muted">No hay datos de antigüedad disponibles.</p>
             </div>
           )}
 
           {!isLoading && !isError && data && data.totalClientes > 0 && (
-            <div className="p-5 space-y-5">
+            <div className="px-6 py-4 space-y-5">
               {buckets.map(({ key, label, colorClass }) => (
                 <BucketRow
                   key={key}
@@ -146,15 +144,13 @@ export function AntiguedadDrawer({ isOpen, onClose }: AntiguedadDrawerProps) {
 
         {/* Footer */}
         {!isLoading && !isError && data && data.totalClientes > 0 && (
-          <div className="flex-shrink-0 border-t border-border px-5 py-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-text-muted uppercase tracking-wider font-medium">
-                Total clientes activos
-              </span>
-              <span className="text-sm font-semibold text-brand tabular-nums">
-                {formatNumber(data.totalClientes)}
-              </span>
-            </div>
+          <div className="flex-shrink-0 border-t border-border bg-page/40 px-6 py-4 flex items-center justify-between">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+              Total clientes activos
+            </span>
+            <span className="text-sm font-bold text-brand tabular-nums">
+              {formatNumber(data.totalClientes)}
+            </span>
           </div>
         )}
       </div>

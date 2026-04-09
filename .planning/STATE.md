@@ -94,9 +94,10 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260408-i7u | Nueva MetricCard "Instalados este mes" + fix activeClients incluir Gratis | 2026-04-08 | 0835dbd | [260408-i7u](./quick/260408-i7u-nueva-metrica-clientes-instalados-mes-fi/) |
+| 260408-tf7 | Add 3 new metric cards - zones, mora, antiguedad | 2026-04-09 | da7a6b7 | [260408-tf7](./quick/260408-tf7-add-3-new-metric-cards-zones-mora-antigu/) |
 
 ## Session Continuity
 
-Last session: 2026-04-08T18:30:00.000Z
-Stopped at: Quick task 260408-i7u completa — nueva card Instalados + fix Gratis + InstalledClientsDrawer
+Last session: 2026-04-09T02:11:02.868Z
+Stopped at: Quick task 260408-tf7 completa — 3 nuevas cards (Zonas, Mora, Antigüedad) + endpoints + drawers
 Resume file: None

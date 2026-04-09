@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         // D-01: Primary brand — gold amber extraído del logo BEEPYRED
         brand: {
@@ -18,6 +21,8 @@ const config: Config = {
         page: '#0A0A0A',
         // D-03: Superficie (cards, paneles) — zinc-900
         surface: '#18181B',
+        // D-03b: Superficie levemente más clara para elementos anidados
+        surface2: '#1C1C1F',
         // D-04: Borde — zinc-800
         border: '#27272A',
         // D-05: Texto

@@ -38,10 +38,10 @@ export function RefreshButton() {
       onClick={handleRefresh}
       disabled={isDisabled}
       className={cn(
-        'border-border bg-surface text-text-secondary',
+        'rounded-xl border-border bg-surface text-text-secondary',
         'hover:border-brand hover:text-brand',
         'disabled:opacity-50 disabled:cursor-not-allowed',
-        'transition-colors',
+        'transition-colors duration-200',
       )}
       aria-label="Actualizar datos del dashboard"
     >

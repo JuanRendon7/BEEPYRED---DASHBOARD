@@ -25,9 +25,14 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'rounded-xl border border-border bg-surface p-6',
-        'transition-colors',
-        isClickable && 'cursor-pointer hover:border-zinc-600 select-none',
+        'group relative overflow-hidden rounded-2xl border border-border bg-surface p-5',
+        'transition-all duration-200',
+        isClickable && [
+          'cursor-pointer select-none',
+          'hover:border-zinc-600 hover:-translate-y-px',
+          'hover:shadow-2xl hover:shadow-black/50',
+          'active:translate-y-0 active:shadow-lg',
+        ],
         className
       )}
       onClick={onClick}
@@ -35,25 +40,36 @@ export function MetricCard({
       tabIndex={isClickable ? 0 : undefined}
       onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick() } : undefined}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-text-secondary truncate">{title}</p>
-          <p className="mt-2 text-3xl font-bold text-text-primary leading-none">
-            {value}
-          </p>
-          {subtitle && (
-            <p className="mt-1 text-xs text-text-muted">{subtitle}</p>
-          )}
-        </div>
-        <div
-          className={cn(
-            'flex-shrink-0 rounded-lg p-3',
-            iconClassName
-          )}
-        >
-          <Icon className="h-6 w-6" aria-hidden="true" />
+      {/* Shimmer top line */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* Header row: title + icon */}
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-widest text-text-muted leading-none pt-0.5">
+          {title}
+        </p>
+        <div className={cn(
+          'flex-shrink-0 rounded-xl p-2.5',
+          'bg-white/5 ring-1 ring-inset ring-white/8',
+          'transition-colors duration-200',
+          isClickable && 'group-hover:bg-white/8',
+          iconClassName
+        )}>
+          <Icon className="h-4 w-4" aria-hidden="true" />
         </div>
       </div>
+
+      {/* Value */}
+      <p className="mt-4 text-2xl font-bold leading-none tracking-tight text-text-primary tabular-nums">
+        {value}
+      </p>
+
+      {/* Subtitle */}
+      {subtitle && (
+        <p className="mt-2 text-xs leading-relaxed text-text-muted/80">
+          {subtitle}
+        </p>
+      )}
     </div>
   )
 }

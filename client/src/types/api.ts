@@ -164,3 +164,77 @@ export interface PlansResponse {
 }
 
 export type PlansApiResponse = PlansResponse | BffErrorResponse
+
+// ── Zona individual (BFF normalizado) ──
+export interface ZoneStat {
+  nombre: string
+  clientCount: number
+  recaudo: number      // suma de precio_plan de clientes activos/gratis en esta zona
+  avgPrecio: number    // recaudo / clientCount
+}
+
+// ── Respuesta GET /api/zones ──
+export interface ZonesData {
+  zones: ZoneStat[]
+  totalZonas: number
+  totalClientes: number
+  zonaConMasClientes: string | null
+  fetchedAt: string
+}
+
+export interface ZonesResponse {
+  success: true
+  data: ZonesData
+  cached?: boolean
+}
+
+export type ZonesApiResponse = ZonesResponse | BffErrorResponse
+
+// ── Cliente en mora (BFF normalizado) ──
+export interface MoraClient {
+  nombre: string
+  totalMora: number       // suma de total_cobrado de facturas vencidas
+  diasMaxAtraso: number   // máximo días de atraso entre sus facturas vencidas
+  facturaCount: number    // número de facturas vencidas
+}
+
+// ── Respuesta GET /api/mora ──
+export interface MoraData {
+  clientesEnMora: MoraClient[]
+  totalClientesEnMora: number
+  totalMontoMora: number
+  fetchedAt: string
+}
+
+export interface MoraResponse {
+  success: true
+  data: MoraData
+  cached?: boolean
+}
+
+export type MoraApiResponse = MoraResponse | BffErrorResponse
+
+// ── Distribución de antigüedad ──
+export interface AntiguedadDistribution {
+  menosDe6Meses: number   // < 180 días
+  de6A12Meses: number     // 180–364 días
+  de1A2Anos: number       // 365–729 días
+  masDe2Anos: number      // >= 730 días
+}
+
+// ── Respuesta GET /api/antiguedad ──
+export interface AntiguedadData {
+  avgDays: number
+  avgLabel: string                    // e.g. "1 año 3 meses"
+  distribution: AntiguedadDistribution
+  totalClientes: number
+  fetchedAt: string
+}
+
+export interface AntiguedadResponse {
+  success: true
+  data: AntiguedadData
+  cached?: boolean
+}
+
+export type AntiguedadApiResponse = AntiguedadResponse | BffErrorResponse

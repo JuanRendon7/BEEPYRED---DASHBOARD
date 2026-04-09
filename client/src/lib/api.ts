@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { MetricsData, InvoicesData, ClientsData, GrowthData, PlansData } from '@/types/api'
+import type { MetricsData, InvoicesData, ClientsData, GrowthData, PlansData, ZonesData, MoraData, AntiguedadData } from '@/types/api'
 
 // Axios instance — el baseURL es relativo porque Vite proxea /api/* a localhost:3001
 const http = axios.create({
@@ -70,6 +70,45 @@ export async function fetchPlans(): Promise<PlansData> {
   if (!response.data.success) {
     const err = response.data as unknown as { error: { message: string } }
     throw new Error(err.error?.message ?? 'Error desconocido al obtener datos de planes')
+  }
+
+  return response.data.data
+}
+
+// ── fetchZones ──
+// Llama GET /api/zones y devuelve ZonesData (throws en error)
+export async function fetchZones(): Promise<ZonesData> {
+  const response = await http.get<{ success: boolean; data: ZonesData; error?: unknown }>('/api/zones')
+
+  if (!response.data.success) {
+    const err = response.data as unknown as { error: { message: string } }
+    throw new Error(err.error?.message ?? 'Error desconocido al obtener datos de zonas')
+  }
+
+  return response.data.data
+}
+
+// ── fetchMora ──
+// Llama GET /api/mora y devuelve MoraData (throws en error)
+export async function fetchMora(): Promise<MoraData> {
+  const response = await http.get<{ success: boolean; data: MoraData; error?: unknown }>('/api/mora')
+
+  if (!response.data.success) {
+    const err = response.data as unknown as { error: { message: string } }
+    throw new Error(err.error?.message ?? 'Error desconocido al obtener datos de mora')
+  }
+
+  return response.data.data
+}
+
+// ── fetchAntiguedad ──
+// Llama GET /api/antiguedad y devuelve AntiguedadData (throws en error)
+export async function fetchAntiguedad(): Promise<AntiguedadData> {
+  const response = await http.get<{ success: boolean; data: AntiguedadData; error?: unknown }>('/api/antiguedad')
+
+  if (!response.data.success) {
+    const err = response.data as unknown as { error: { message: string } }
+    throw new Error(err.error?.message ?? 'Error desconocido al obtener datos de antigüedad')
   }
 
   return response.data.data

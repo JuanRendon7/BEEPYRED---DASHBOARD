@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import type { InstalledClientsData } from '@/types/api'
-
-const BFF_BASE = import.meta.env.VITE_BFF_URL ?? 'http://localhost:3001'
+import { TOKEN_KEY } from '@/contexts/AuthContext'
 
 async function fetchInstalledClients(): Promise<InstalledClientsData> {
-  const { data } = await axios.get(`${BFF_BASE}/api/clients/installed-this-month`)
+  const token = localStorage.getItem(TOKEN_KEY)
+  const { data } = await axios.get('/api/clients/installed-this-month', {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
   if (!data.success) throw new Error(data.error?.message ?? 'Error fetching installed clients')
   return data.data as InstalledClientsData
 }

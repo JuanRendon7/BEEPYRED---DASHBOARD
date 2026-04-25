@@ -27,7 +27,7 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'card-shimmer group relative overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-sm p-5',
+        'card-shimmer group relative overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-sm px-5 pt-5 pb-6',
         'transition-all duration-300',
         isClickable && [
           'cursor-pointer select-none',
@@ -70,7 +70,7 @@ export function MetricCard({
       {isLoading ? (
         <div className="mt-4 h-8 w-32 rounded-lg bg-white/[0.06] animate-pulse" />
       ) : (
-        <p className="mt-4 text-2xl font-bold leading-none tracking-tight text-text-primary tabular-nums transition-colors duration-200 group-hover:text-white">
+        <p className="mt-4 text-2xl font-bold leading-tight tracking-tight text-text-primary tabular-nums transition-colors duration-200 group-hover:text-white">
           {value}
         </p>
       )}

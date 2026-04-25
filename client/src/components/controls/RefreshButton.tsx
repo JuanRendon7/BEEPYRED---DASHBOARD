@@ -13,6 +13,7 @@ import { PLANS_QUERY_KEY } from '@/hooks/usePlans'
 import { INVERSION_QUERY_KEY } from '@/hooks/useInversion'
 import { CLIENTS_QUERY_KEY } from '@/hooks/useClients'
 import { INSTALLED_CLIENTS_QUERY_KEY } from '@/hooks/useInstalledClients'
+import { COBRANZA_QUERY_KEY } from '@/hooks/useCobranza'
 
 const COOLDOWN_MS = 30_000  // 30 segundos — rate limit protection
 
@@ -40,6 +41,7 @@ export function RefreshButton() {
       queryClient.invalidateQueries({ queryKey: INVERSION_QUERY_KEY }),
       queryClient.invalidateQueries({ queryKey: CLIENTS_QUERY_KEY }),
       queryClient.invalidateQueries({ queryKey: INSTALLED_CLIENTS_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: COBRANZA_QUERY_KEY }),
     ])
 
     setTimeout(() => {

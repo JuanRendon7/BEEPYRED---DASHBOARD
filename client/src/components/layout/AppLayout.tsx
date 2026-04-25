@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { BackgroundAnimation } from './BackgroundAnimation'
 
 interface AppLayoutProps {
   sidebar: ReactNode
@@ -39,17 +40,7 @@ export function AppLayout({ sidebar, children, title, subtitle, headerActions }:
 
         {/* Scrollable content */}
         <main className="flex-1 overflow-y-auto relative">
-          <div
-            className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center"
-            aria-hidden="true"
-          >
-            <img
-              src="/beepyred-logo.jpg"
-              alt=""
-              className="w-[480px] max-w-[55vw] opacity-[0.03]"
-              style={{ mixBlendMode: 'screen' }}
-            />
-          </div>
+          <BackgroundAnimation />
           <div className="relative z-10 px-8 pt-8 pb-16">{children}</div>
         </main>
       </div>

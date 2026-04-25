@@ -27,7 +27,7 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'card-shimmer group relative overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-sm p-5',
+        'card-shimmer group relative rounded-2xl border border-border bg-surface/60 backdrop-blur-sm p-5',
         'transition-all duration-300',
         isClickable && [
           'cursor-pointer select-none',

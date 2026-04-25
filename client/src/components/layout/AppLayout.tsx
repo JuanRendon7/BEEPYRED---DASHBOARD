@@ -50,7 +50,7 @@ export function AppLayout({ sidebar, children, title, subtitle, headerActions }:
               style={{ mixBlendMode: 'screen' }}
             />
           </div>
-          <div className="relative z-10 p-8">{children}</div>
+          <div className="relative z-10 px-8 pt-8 pb-16">{children}</div>
         </main>
       </div>
     </div>

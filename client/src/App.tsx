@@ -40,6 +40,9 @@ function AppInner() {
       subtitle={meta.subtitle}
       headerActions={
         <>
+          <span className="text-xs text-text-muted hidden sm:block">
+            Bienvenido, <span className="text-text-primary font-medium">{user.nombre}</span>
+          </span>
           <LastUpdated />
           <RefreshButton />
         </>

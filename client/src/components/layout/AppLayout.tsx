@@ -13,14 +13,28 @@ export function AppLayout({ sidebar, children, title, subtitle, headerActions }:
     <div className="flex h-screen bg-page overflow-hidden">
       {sidebar}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+
         {/* Header */}
-        <header className="flex items-center justify-between px-8 h-16 border-b border-border bg-page/90 backdrop-blur-xl shrink-0 relative">
-          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-brand/25 to-transparent" />
-          <div>
-            <h1 className="text-base font-bold text-text-primary tracking-tight">{title}</h1>
-            {subtitle && <p className="text-xs text-text-muted mt-0.5">{subtitle}</p>}
+        <header className="shrink-0 relative px-8 py-0 h-20 flex items-center justify-between border-b border-border bg-page/95 backdrop-blur-xl">
+          {/* Bottom accent line */}
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-brand/30 to-transparent" />
+          {/* Subtle top glow */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+
+          {/* Left — page title */}
+          <div className="flex flex-col justify-center gap-0.5">
+            <h1 className="text-xl font-bold text-text-primary tracking-tight leading-none">{title}</h1>
+            {subtitle && (
+              <p className="text-xs text-text-muted leading-none mt-1">{subtitle}</p>
+            )}
           </div>
-          {headerActions && <div className="flex items-center gap-3">{headerActions}</div>}
+
+          {/* Right — actions */}
+          {headerActions && (
+            <div className="flex items-center gap-3">
+              {headerActions}
+            </div>
+          )}
         </header>
 
         {/* Scrollable content */}

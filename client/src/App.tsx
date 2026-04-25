@@ -40,11 +40,29 @@ function AppInner() {
       subtitle={meta.subtitle}
       headerActions={
         <>
-          <span className="text-xs text-text-muted hidden sm:block">
-            Bienvenido, <span className="text-text-primary font-medium">{user.nombre}</span>
-          </span>
           <LastUpdated />
           <RefreshButton />
+          {/* Divider */}
+          <div className="w-px h-6 bg-border mx-1" />
+          {/* User badge */}
+          <div className="flex items-center gap-2.5 pl-1">
+            <div
+              className="flex items-center justify-center w-8 h-8 rounded-xl shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(245,168,0,0.25) 0%, rgba(245,168,0,0.1) 100%)',
+                border: '1px solid rgba(245,168,0,0.3)',
+                boxShadow: '0 0 12px rgba(245,168,0,0.15)',
+              }}
+            >
+              <span className="text-brand font-bold text-sm leading-none">
+                {user.nombre.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="hidden sm:flex flex-col justify-center">
+              <p className="text-sm font-semibold text-text-primary leading-none">{user.nombre}</p>
+              <p className="text-[10px] text-text-muted mt-0.5 leading-none">Administrador</p>
+            </div>
+          </div>
         </>
       }
     >

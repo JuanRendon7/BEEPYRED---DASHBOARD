@@ -27,7 +27,7 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'card-shimmer group relative rounded-2xl border border-border bg-surface/60 backdrop-blur-sm p-5',
+        'card-shimmer group relative overflow-hidden rounded-2xl border border-border bg-surface/60 backdrop-blur-sm p-5',
         'transition-all duration-300',
         isClickable && [
           'cursor-pointer select-none',
@@ -48,7 +48,7 @@ export function MetricCard({
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Corner glow — top right */}
-      <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full bg-brand/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="absolute -top-10 -right-10 w-24 h-24 rounded-full bg-brand/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none overflow-hidden" />
 
       {/* Header row: title + icon */}
       <div className="flex items-start justify-between gap-3">

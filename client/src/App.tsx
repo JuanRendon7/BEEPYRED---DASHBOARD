@@ -40,10 +40,10 @@ function AppInner() {
       subtitle={meta.subtitle}
       headerActions={
         <>
-          <LastUpdated />
+          <div className="hidden sm:block"><LastUpdated /></div>
           <RefreshButton />
           {/* Divider */}
-          <div className="w-px h-6 bg-border mx-1" />
+          <div className="hidden sm:block w-px h-6 bg-border mx-1" />
           {/* User badge */}
           <div className="flex items-center gap-2.5 pl-1">
             <div

@@ -12,6 +12,7 @@ const CACHE_TTL_MS = 30_000  // 30 seconds
 interface MetricsData {
   activeClients: number
   suspendedClients: number       // Clients with estado === 'Suspendido'
+  canceledClients: number        // Clients with estado === 'Cancelado'
   pendingDebt: number            // Sum of saldo across all active clients with saldo > 0
   monthlyRevenue: number         // Sum of total_cobrado for paid invoices this month
   installedThisMonth: number     // Clients with fecha_alta in current month/year
@@ -185,6 +186,7 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
     // Validate and filter clients server-side
     const activeClients: z.infer<typeof WisphubClientSchema>[] = []
     let suspendedClients = 0
+    let canceledClients = 0
     let validationWarnings = 0
 
     for (const raw of allClientsRaw.results) {
@@ -194,6 +196,8 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
           activeClients.push(parsed.data)
         } else if (parsed.data.estado === 'Suspendido') {
           suspendedClients++
+        } else if (parsed.data.estado === 'Cancelado') {
+          canceledClients++
         }
       } else {
         validationWarnings++
@@ -253,6 +257,7 @@ metricsRouter.get('/api/metrics', async (_req: Request, res: Response) => {
     const data: MetricsData = {
       activeClients: activeClients.length,
       suspendedClients,
+      canceledClients,
       pendingDebt: Math.round(pendingDebt * 100) / 100,
       monthlyRevenue: Math.round(monthlyRevenue * 100) / 100,
       installedThisMonth,

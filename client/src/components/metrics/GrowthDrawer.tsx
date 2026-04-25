@@ -229,7 +229,7 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
                       contentStyle={CHART_TOOLTIP_STYLE}
                       labelStyle={CHART_LABEL_STYLE}
                       itemStyle={CHART_ITEM_STYLE}
-                      labelFormatter={formatMonthLabel}
+                      labelFormatter={(label) => formatMonthLabel(String(label ?? ''))}
                     />
                     <Bar
                       yAxisId="left"
@@ -290,7 +290,7 @@ export function GrowthDrawer({ isOpen, onClose }: GrowthDrawerProps) {
                       contentStyle={CHART_TOOLTIP_STYLE}
                       labelStyle={CHART_LABEL_STYLE}
                       itemStyle={CHART_ITEM_STYLE}
-                      labelFormatter={formatMonthLabel}
+                      labelFormatter={(label) => formatMonthLabel(String(label ?? ''))}
                       formatter={(value, name) =>
                         name === 'Ingresos' || name === 'Acumulado'
                           ? [formatCOP(value as number), name]

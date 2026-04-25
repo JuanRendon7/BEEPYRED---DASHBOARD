@@ -1,5 +1,6 @@
 import axios from 'axios'
-import type { MetricsData, InvoicesData, ClientsData, GrowthData, PlansData, ZonesData, MoraData, AntiguedadData, InversionData } from '@/types/api'
+import type { MetricsData, InvoicesData, ClientsData, GrowthData, PlansData, ZonesData, MoraData, AntiguedadData, InversionData, CobranzaData } from '@/types/api'
+import { TOKEN_KEY } from '@/contexts/AuthContext'
 
 // Axios instance — el baseURL es relativo porque Vite proxea /api/* a localhost:3001
 const http = axios.create({
@@ -8,6 +9,15 @@ const http = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+})
+
+// Auth interceptor — inject JWT token on every request
+http.interceptors.request.use(config => {
+  const token = localStorage.getItem(TOKEN_KEY)
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
 
 // ── fetchMetrics ──
@@ -109,6 +119,19 @@ export async function fetchAntiguedad(): Promise<AntiguedadData> {
   if (!response.data.success) {
     const err = response.data as unknown as { error: { message: string } }
     throw new Error(err.error?.message ?? 'Error desconocido al obtener datos de antigüedad')
+  }
+
+  return response.data.data
+}
+
+// ── fetchCobranza ──
+// Llama GET /api/cobranza y devuelve CobranzaData (tasa + avg días pago)
+export async function fetchCobranza(): Promise<CobranzaData> {
+  const response = await http.get<{ success: boolean; data: CobranzaData; error?: unknown }>('/api/cobranza')
+
+  if (!response.data.success) {
+    const err = response.data as unknown as { error: { message: string } }
+    throw new Error(err.error?.message ?? 'Error desconocido al obtener datos de cobranza')
   }
 
   return response.data.data

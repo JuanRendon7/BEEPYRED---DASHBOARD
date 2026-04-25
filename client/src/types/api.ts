@@ -22,6 +22,7 @@ export interface BffInvoice {
 export interface MetricsData {
   activeClients: number
   suspendedClients: number      // Clientes con estado === 'Suspendido' en Wisphub
+  canceledClients: number       // Clientes con estado === 'Cancelado'
   pendingDebt: number
   monthlyRevenue: number
   installedThisMonth: number    // Clientes con fecha_alta en el mes actual (0 si campo no disponible)
@@ -278,3 +279,23 @@ export interface InversionResponse {
 }
 
 export type InversionApiResponse = InversionResponse | BffErrorResponse
+
+// ── Cobranza ──
+export interface CobranzaData {
+  tasaCobranzaMes: number        // % facturas emitidas este mes ya cobradas
+  tasaCobranzaGeneral: number    // % histórico total cobradas
+  avgPaymentDays: number         // días promedio entre emisión y pago
+  facturasPagadasMes: number
+  facturasEmitidasMes: number
+  facturasPagadasTotal: number
+  facturasEmitidasTotal: number
+  fetchedAt: string
+}
+
+export interface CobranzaResponse {
+  success: true
+  data: CobranzaData
+  cached?: boolean
+}
+
+export type CobranzaApiResponse = CobranzaResponse | BffErrorResponse

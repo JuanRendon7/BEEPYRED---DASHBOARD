@@ -66,7 +66,7 @@ export function exportToPDF(
 
   autoTable(doc, {
     columns,
-    body: rows,
+    body: rows as never[],
     startY: 35,
     styles: {
       fontSize: 8,
@@ -113,7 +113,7 @@ export function exportToPDFMultiSection(
 
     autoTable(doc, {
       columns: section.columns,
-      body: section.rows,
+      body: section.rows as never[],
       startY: currentY,
       styles: {
         fontSize: 8,

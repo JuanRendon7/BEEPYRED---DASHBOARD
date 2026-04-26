@@ -52,7 +52,7 @@ export function MoraDrawer({ isOpen, onClose }: MoraDrawerProps) {
       />
       <div
         className={cn(
-          'fixed top-0 right-0 z-40 h-full w-[520px] max-w-[95vw]',
+          'fixed top-0 right-0 z-40 h-dvh w-[520px] max-w-[95vw]',
           'bg-surface border-l border-border',
           'flex flex-col',
           'transform transition-transform duration-300 ease-in-out',

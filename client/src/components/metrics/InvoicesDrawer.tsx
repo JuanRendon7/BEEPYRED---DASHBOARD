@@ -88,7 +88,7 @@ export function InvoicesDrawer({ type, onClose }: InvoicesDrawerProps) {
         className={cn(
           'fixed inset-y-0 right-0 z-40 w-[520px] max-w-[95vw]',
           'bg-surface border-l border-border',
-          'flex flex-col',
+          'flex flex-col overflow-hidden',
           'transform transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}

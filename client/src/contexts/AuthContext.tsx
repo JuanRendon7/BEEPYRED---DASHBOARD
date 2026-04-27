@@ -51,6 +51,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(TOKEN_KEY, newToken)
     setToken(newToken)
     setUser({ username: u, nombre })
+
+    // Registrar acceso
+    const entry = { nombre, timestamp: new Date().toISOString() }
+    const prev = JSON.parse(localStorage.getItem('beepyred_access_logs') ?? '[]') as typeof entry[]
+    localStorage.setItem('beepyred_access_logs', JSON.stringify([entry, ...prev].slice(0, 100)))
   }, [])
 
   const logout = useCallback(() => {

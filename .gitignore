@@ -29,6 +29,7 @@ Thumbs.db
 
 # GSD planning (local only)
 .planning/
+.claude/worktrees/
 
 # Wisphub exploration outputs with real client data (T-02-01, T-02-03)
 server/exploration/01-raw-responses.md

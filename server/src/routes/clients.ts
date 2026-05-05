@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express'
-import { fetchAllPages } from '../lib/wisphub'
+import { fetchAllPages, wisphubClient } from '../lib/wisphub'
 import { WisphubClientSchema } from '../lib/schemas'
 import { cache } from '../lib/cache'
 
@@ -74,8 +74,31 @@ clientsRouter.get('/api/clients', async (_req: Request, res: Response) => {
       }
     }
 
+    // /api/facturas/ solo retorna los últimos ~2 meses — clientes no-activos con deuda antigua no aparecen.
+    // Para Suspendidos y Gratis usamos /api/clientes/{id}/saldo/ que siempre devuelve el saldo real histórico.
+    const nonActiveIds = (allRaw.results as any[])
+      .filter(r => (r.estado === 'Suspendido' || r.estado === 'Gratis') && typeof r.id_servicio === 'number')
+      .map(r => r.id_servicio as number)
+
+    if (nonActiveIds.length > 0) {
+      await Promise.allSettled(
+        nonActiveIds.map(async (id) => {
+          try {
+            const res = await wisphubClient.get(`/api/clientes/${id}/saldo/`)
+            const saldo = res.data?.saldo
+            if (typeof saldo === 'number' && saldo > 0) {
+              debtById.set(id, saldo)
+            }
+          } catch {
+            // Si falla un saldo individual no rompemos todo el endpoint
+          }
+        })
+      )
+    }
+
     console.log('[/api/clients] facturas totales:', allInvoicesRaw.results.length)
     console.log('[/api/clients] clientes con deuda:', debtById.size)
+    console.log('[/api/clients] no-activos consultados vía saldo:', nonActiveIds.length)
     if (debtById.size > 0) {
       console.log('[/api/clients] muestra deuda (id → monto):', [...debtById.entries()].slice(0, 3))
     }

@@ -4,13 +4,12 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useMetrics } from '@/hooks/useMetrics'
 import { useMora } from '@/hooks/useMora'
 import { useGrowth } from '@/hooks/useGrowth'
-import { useAuth } from '@/contexts/AuthContext'
 import { MetricCard } from '@/components/metrics/MetricCard'
 import { ClientsDrawer } from '@/components/metrics/ClientsDrawer'
 import { MoraDrawer } from '@/components/metrics/MoraDrawer'
 import { InvoicesDrawer } from '@/components/metrics/InvoicesDrawer'
 import { InstalledClientsDrawer } from '@/components/metrics/InstalledClientsDrawer'
-import { AccessLogsCard } from '@/components/metrics/AccessLogsCard'
+import { CompromisosCard } from '@/components/metrics/CompromisosCard'
 
 const formatCOP = (n: number) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n)
@@ -31,12 +30,10 @@ function GrowthTooltip({ active, payload, label }: any) {
 }
 
 export function DashboardView() {
-  const { user } = useAuth()
   const { data: metrics, isLoading: metricsLoading } = useMetrics()
   const { data: mora, isLoading: moraLoading } = useMora()
   const { data: growth, isLoading: growthLoading } = useGrowth()
   const [drawerEstado, setDrawerEstado] = useState<'Activo' | 'Suspendido' | null>(null)
-  const isJuanCamilo = user?.nombre.toLowerCase().includes('juan camilo') ?? false
   const [moraOpen, setMoraOpen] = useState(false)
   const [invoicesDrawer, setInvoicesDrawer] = useState<'revenue' | 'pending' | null>(null)
   const [installedOpen, setInstalledOpen] = useState(false)
@@ -214,7 +211,7 @@ export function DashboardView() {
         </div>
       </div>
 
-      {isJuanCamilo && <AccessLogsCard />}
+      <CompromisosCard />
 
       <ClientsDrawer estado={drawerEstado} onClose={() => setDrawerEstado(null)} />
       <MoraDrawer isOpen={moraOpen} onClose={() => setMoraOpen(false)} />

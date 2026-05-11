@@ -6,6 +6,7 @@ import { DashboardView } from '@/components/views/DashboardView'
 import { FinancieroView } from '@/components/views/FinancieroView'
 import { UsuariosView } from '@/components/views/UsuariosView'
 import { CrecimientoView } from '@/components/views/CrecimientoView'
+import { CompromisosView } from '@/components/views/CompromisosView'
 import { LoginView } from '@/components/views/LoginView'
 import { RefreshButton } from '@/components/controls/RefreshButton'
 import { LastUpdated } from '@/components/controls/LastUpdated'
@@ -15,6 +16,7 @@ const sectionMeta: Record<NavSection, { title: string; subtitle: string }> = {
   financiero: { title: 'Financiero', subtitle: 'Ingresos, recaudo y estado de cartera' },
   usuarios: { title: 'Usuarios', subtitle: 'Clientes, zonas y distribución de planes' },
   crecimiento: { title: 'Crecimiento', subtitle: 'Evolución histórica e instalaciones' },
+  compromisos: { title: 'Compromisos Legales', subtitle: 'Obligaciones tributarias y contribuciones 2026' },
 }
 
 function AppInner() {
@@ -70,6 +72,7 @@ function AppInner() {
       {section === 'financiero' && <FinancieroView />}
       {section === 'usuarios' && <UsuariosView />}
       {section === 'crecimiento' && <CrecimientoView />}
+      {section === 'compromisos' && <CompromisosView />}
     </AppLayout>
   )
 }

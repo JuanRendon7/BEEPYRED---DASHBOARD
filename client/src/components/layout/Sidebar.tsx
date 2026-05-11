@@ -1,14 +1,15 @@
-import { LayoutDashboard, DollarSign, Users, TrendingUp, LogOut } from 'lucide-react'
+import { LayoutDashboard, DollarSign, Users, TrendingUp, Scale, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 
-export type NavSection = 'dashboard' | 'financiero' | 'usuarios' | 'crecimiento'
+export type NavSection = 'dashboard' | 'financiero' | 'usuarios' | 'crecimiento' | 'compromisos'
 
 const navItems = [
   { id: 'dashboard' as NavSection, label: 'Dashboard', icon: LayoutDashboard, desc: 'Vista general' },
   { id: 'financiero' as NavSection, label: 'Financiero', icon: DollarSign, desc: 'Ingresos y deuda' },
   { id: 'usuarios' as NavSection, label: 'Usuarios', icon: Users, desc: 'Clientes y planes' },
   { id: 'crecimiento' as NavSection, label: 'Crecimiento', icon: TrendingUp, desc: 'Evolución histórica' },
+  { id: 'compromisos' as NavSection, label: 'Compromisos', icon: Scale, desc: 'Obligaciones legales' },
 ]
 
 interface SidebarProps {

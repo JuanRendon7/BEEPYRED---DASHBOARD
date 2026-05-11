@@ -9,7 +9,6 @@ import { ClientsDrawer } from '@/components/metrics/ClientsDrawer'
 import { MoraDrawer } from '@/components/metrics/MoraDrawer'
 import { InvoicesDrawer } from '@/components/metrics/InvoicesDrawer'
 import { InstalledClientsDrawer } from '@/components/metrics/InstalledClientsDrawer'
-import { CompromisosCard } from '@/components/metrics/CompromisosCard'
 
 const formatCOP = (n: number) =>
   new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n)
@@ -46,12 +45,9 @@ export function DashboardView() {
       : null
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 items-start">
+    <div className="space-y-6">
 
-      {/* ── Contenido principal ── */}
-      <div className="flex-1 min-w-0 space-y-6">
-
-        {/* Section header */}
+      {/* Section header */}
         <div>
           <h2 className="text-xl font-bold text-text-primary">Resumen Ejecutivo</h2>
           <p className="text-sm text-text-muted mt-1">Vista consolidada del estado actual de BEEPYRED</p>
@@ -214,11 +210,6 @@ export function DashboardView() {
             </button>
           </div>
         </div>
-      </div>
-
-      {/* ── Panel lateral: Compromisos Anuales ── */}
-      <div className="w-full lg:w-72 xl:w-80 shrink-0">
-        <CompromisosCard />
       </div>
 
       <ClientsDrawer estado={drawerEstado} onClose={() => setDrawerEstado(null)} />

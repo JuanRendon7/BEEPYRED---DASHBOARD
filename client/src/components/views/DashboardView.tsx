@@ -209,7 +209,6 @@ export function DashboardView() {
               Ver cartera completa <ArrowUpRight className="h-3 w-3" />
             </button>
           </div>
-        </div>
       </div>
 
       <ClientsDrawer estado={drawerEstado} onClose={() => setDrawerEstado(null)} />
